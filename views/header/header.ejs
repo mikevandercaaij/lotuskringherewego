@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+    <title>LOTUS | <%= pageName %></title>
+    <meta content="Official LOTUS Here We Go Assignment handler." name="description" />
+
+    <!-- Favicons -->
+    <link href="/assets/img/lotus_icon.png" rel="icon" />
+    <link href="/assets/img/img/lotus_icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet" />
+
+    <!-- Vendor CSS Files -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet" />
+    <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet" />
+    <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet" />
+    <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet" />
+    <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+
+    <link href="/assets/css/password.css" rel="stylesheet" />
+    
+    <!-- Template Main CSS File -->
+    <link href="/assets/css/style.css" rel="stylesheet" />
+
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+</head>
+
+<body>
+    <% if (typeof session != "undefined" && typeof session.user != "undefined") {%>
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="/" class="logo d-flex align-items-center">
+                <img src="/assets/img/lotus_icon.png" alt="" />
+                <span class="d-none d-lg-block">LOTUS-Kring Here We Go</span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div>
+        <!-- End Logo -->
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center">
+                <% if(session.user.activeRole === "coordinator") { %> 
+                <li class="nav-item dropdown">
+                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge bg-primary badge-number"><%= session.requests.length %></span>
+                    </a>
+                    <!-- End Notification Icon -->
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                        <li class="dropdown-header">
+                            Er zijn <%= session.requests.length %>  onbehandelde verzoeken
+                            <a href="/request"><span class="badge rounded-pill bg-primary p-2 ms-2">Bekijk</span></a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <% let requests = [];
+                           let loopValue = "";
+                        
+                        if(session.requests.length >= 3) { 
+                            requests = session.requests.slice(-3);
+                            loopValue = requests.length - 4
+                        } else if(session.requests.length === 2) {
+                            requests = session.requests.slice(-2);
+                            loopValue = requests.length - 3
+                        } else if(session.requests.length === 1) {
+                            requests = session.requests.slice(-1);
+                            loopValue = requests.length - 2
+                        } %>
+                        <% for( let i = requests.length - 1; i > loopValue; i-- ) { %>
+                            <% let requestTitle = "";
+                            let requestMessage = ""; %> 
+                            <% switch(requests[i].type) { 
+                                case "createAssignment":   
+                                    requestTitle = "Opdracht aanmaken"; 
+                                    requestMessage = requests[i].user.firstName + " wil een opdracht aanmaken";
+                                    break; 
+                                case "updateAssignment": 
+                                    requestTitle = "Opdracht bewerken"; 
+                                    requestMessage = requests[i].user.firstName + " wil een opdracht bewerken";
+                                    break; 
+                                case "deleteAssignment": 
+                                    requestTitle = "Opdracht verwijderen";
+                                    requestMessage = requests[i].user.firstName + " wil een opdracht verwijderen";
+                                    break; 
+                                case "cancelEnrollment": 
+                                    requestTitle = "Uitschrijving"; 
+                                    requestMessage = requests[i].user.firstName + " wil zich uitschrijven voor een opdracht";
+                                    break; 
+                                case "enrollment": 
+                                    requestTitle = "Inschrijving"; 
+                                    requestMessage = requests[i].user.firstName + " wil zich inschrijven voor een opdracht";
+                                    break;
+                                case "addClientRole": 
+                                    requestTitle = "Rol toevoegen"; 
+                                    requestMessage = requests[i].user.firstName + " wil ook een opdrachtgever worden";
+                                    break;
+          
+                            } %>
+                            <a href="/request">
+                            <li class="notification-item">
+                                
+                                    <% if(requests[i].type === "enrollment" || requests[i].type === "createAssignment" || requests[i].type === "addClientRole") { %>
+                                        <i class="bi bi-info-circle text-primary"></i>
+                                    <% } else if(requests[i].type === "cancelEnrollment" || requests[i].type === "updateAssignment" ) { %>
+                                        <i class="bi bi-exclamation-circle text-warning"></i>
+                                    <% } else if(requests[i].type === "deleteAssignment") { %>
+                                        <i class="bi bi-x-circle text-danger"></i>
+                                    <% } %>
+                                    <div>
+                                        <h4 style="color: #212529"><%= requestTitle %> </h4>
+                                        <p><%= requestMessage %></p>
+                                        <% const requestAge = msToTime(new Date().getTime() - new Date(session.requests[i].requestDate).getTime());
+                                    
+                                        function msToTime(duration) {
+                                            const minutes = Math.floor((duration / (1000 * 60)) % 60);
+                                            const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+                                            const days = Math.floor(duration / (24*60*60*1000));
+                                            
+                                            if(minutes === 0 && hours == 0 && days == 0 || minutes === 1 && hours == 0 && days == 0) {
+                                                return "1 minuut geleden";
+                                            } else if (hours == 0 && days == 0) {
+                                                return minutes + " minuten geleden"
+                                            } else if(days === 0) {
+                                                return hours + " uur geleden"
+                                            } else if(days === 1) {
+                                                return "1 dag geleden"
+                                            } else {
+                                                return days + " dagen geleden"
+                                            }
+                                        } %> 
+                                        <p><%= requestAge %></p>
+                                    </div>
+                        
+                            </li>
+                        </a>
+    
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+                        <% } %>
+                        <li class="dropdown-footer">
+                            <a href="/request">Bekijk alle verzoeken</a>
+                        </li>
+                    </ul>
+                    <!-- End Notification Dropdown Items -->
+                </li>
+                <% } %> 
+                <!-- End Notification Nav -->
+                <li class="nav-item dropdown pe-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        <img src="/assets/img/avatar.jpg" alt="Profile" class="rounded-circle" />
+                        <span class="d-none d-md-block dropdown-toggle ps-2"><%= session.user.firstName.charAt(0).toUpperCase() + ". " + session.user.lastName %></span>
+                    </a>
+                    <!-- End Profile Iamge Icon -->
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                        <li class="dropdown-header">
+                            <% let role = ""; switch(session.user.activeRole) { case "coordinator": role = "Coördinator"; break; case "client" : role = "Opdrachtgever"; break; case "member": role = "LOTUSslachtoffer"; break; } %>
+                            <h6><%= session.user.firstName + " " + session.user.lastName %></h6>
+                            <span><%= role %></span>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="/user/profile">
+                                <i class="bi bi-person"></i>
+                                <span>Mijn profiel</span>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <% if(session.user.roles.length > 1) { %>
+                        <li>
+                            <div class="dropdown-item d-flex align-items-center">
+                                <i class="bi bi-person-bounding-box"></i>
+                                <span>Verander rol</span>
+                            </div>
+                            <div class="dropdown-item d-flex align-items-center">
+                                <div class="row">
+                                <form action="/user/roles/switch" method="POST">
+                                    <div class="col-10" style="float: left;">
+                                    <select class="form-select" id="activeRoleSwitch" name="activeRole" style="border-radius: 5px 0px 0px 5px; font-size: 14px;">
+                                        <% session.user.roles.forEach(role => { %>
+                                            <option value="<%= role %>" <% if(role == session.user.activeRole) { %> selected <% } %>><% if(role == "coordinator") { %>Coördinator<% } else if(role == "client") { %>Opdrachtgever<% } else if(role == "member") { %>LOTUSslachtoffer<% } %></option>
+                                        <% }); %>
+                                    </select>
+                                    </div>
+                                    <div class="col-2" style="float: right;">
+                                        <button type="submit" class="btn btn-primary" style="border-radius: 0px 5px 5px 0px; font-size: 14px;"><i class="bi bi-arrow-clockwise m-0"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                            </div>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <% } %>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center logout_header" data-bs-toggle="modal" data-bs-target="#confirmation_logout">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>Uitloggen</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- End Profile Dropdown Items -->
+                </li>
+                <!-- End Profile Nav -->
+            </ul>
+        </nav>
+        <!-- End Icons Navigation -->
+    </header>
+    <!-- End Header -->
+    <!-- ======= Sidebar ======= -->
+    <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <li class="nav-item">
+                <% if(pageName === "Dashboard") { %> 
+                    <a class="nav-link" href="/">
+                <% } else {  %> 
+                    <a class="nav-link collapsed" href="/">
+                <% } %> 
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <!-- End Dashboard Nav -->
+            <% if(session.user.activeRole == "coordinator" ) { %>
+                <li class="nav-item">
+                    <% if(pageName === "Gebruikers") { %> 
+                        <a class="nav-link" href="/assignment">
+                    <% } else {  %> 
+                        <a class="nav-link collapsed" href="/user">
+                    <% } %> 
+                        <i class="bi bi-people"></i>
+                        <span>Gebruikers</span>
+                    </a>
+                </li>
+                <% } %>
+                
+                <% if(session.user.activeRole == "coordinator" || session.user.activeRole == "member") { %>
+                    <li class="nav-item">
+                        <% if(pageName === "Opdrachten") { %> 
+                            <a class="nav-link" href="/assignment">
+                        <% } else {  %> 
+                            <a class="nav-link collapsed" href="/assignment">
+                        <% } %> 
+                            <i class="bi bi-archive"></i>
+                            <span>Opdrachten</span>
+                        </a>
+                    </li>
+    
+                <% } %> <% if(session.user.activeRole == "client") { %>
+                    <li class="nav-item">
+                        <% if(pageName === "Mijn opdrachten") { %> 
+                            <a class="nav-link" href="/assignment">
+                        <% } else {  %> 
+                            <a class="nav-link collapsed" href="/assignment">
+                        <% } %> 
+                            <i class="bi bi-archive"></i>
+                            <span>Mijn opdrachten</span>
+                        </a>
+                    </li>
+                
+                <% } %> <% if(session.user.activeRole == "member") { %>
+                    <li class="nav-item">
+                            <% if(pageName === "Mijn opdrachten") { %> 
+                                <a class="nav-link" href="/member/assignment">
+                            <% } else {  %> 
+                                <a class="nav-link collapsed" href="/member/assignment">
+                            <% } %> 
+
+                            <i class="bi bi-archive"></i>
+                            <span>Mijn opdrachten</span>
+                        </a>
+                    </li>
+                <% } %> <% if(session.user.activeRole == "coordinator" || session.user.activeRole == "client") { %>
+                    <li class="nav-item">
+                        <% if(pageName === "Opdracht aanmaken") { %> 
+                            <a class="nav-link" href="/assignment/create">
+                        <% } else {  %> 
+                            <a class="nav-link collapsed" href="/assignment/create">
+                        <% } %> 
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span>Opdracht aanmaken</span>
+                        </a>
+                    </li>
+                
+                <% } %>
+                 <% if(session.user.activeRole == "coordinator") { %>
+                    <li class="nav-item">
+                        <% if(pageName === "Verzoeken") { %> 
+                            <a class="nav-link" href="/request">
+                        <% } else {  %> 
+                            <a class="nav-link collapsed" href="/request">
+                        <% } %> 
+                            <i class="bi bi-inboxes"></i>
+                            <span>Verzoeken</span>
+                        </a>
+                    </li>
+                
+                <% } %>
+            </ul>
+        </aside>
+        <!-- End Sidebar-->
+    <% } %>
+
+    <div class="modal fade" id="confirmation_logout" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bevestigen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Weet je zeker dat je uit wil loggen?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                    <a href="/logout">
+                        <button class="btn btn-primary">Bevestig</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>

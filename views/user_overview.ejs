@@ -1,0 +1,289 @@
+<%- include("header/header") -%>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Gebruikers</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item active">Gebruikers</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+        <% if(typeof alertText != "undefined" && alertText !== "") { %>
+
+        <div class="d-flex justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-1"></i>
+                    <%= alertText %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+            </div>
+        </div>
+
+        <% } %>
+
+
+            <!-- Left side columns -->
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Alle opdrachtgevers</h5>
+                                <table class="display nowrap datatable" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Naam</th>
+                                            <th scope="col">E-mailadres</th>
+                                            <th scope="col">Telefoonnummer</th>
+                                            <th scope="col">Adres</th>
+                                            <th scope="col">Plaats</th>
+                                            <th scope="col">Postcode</th>
+                                            <th scope="col">Acties</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% allClients.forEach(user => { %>
+                                        <tr>
+                                            <td><%=user.firstName + " " + user.lastName%></td>
+                                            <% let role = ""; switch(user.activeRole[0]) { case "coordinator": role = "Coördinator"; break; case "client" : role = "Opdrachtgever"; break; case "member": role = "LOTUSslachtoffer"; break; } %>
+                                            <td><%=user.emailAddress%></td>
+                                            <td><%=user.phoneNumber%></td>
+                                            <td><% if(!user.street || !user.houseNumber) { %><% } else { %><%=user.street + " "%><%if(isNaN(user.houseNumber)){%><%}else{%><%= user.houseNumber + user.houseNumberAddition%><%}%><%}%></td>
+                                            <td><%=user.town%></td>
+                                            <td><%=user.postalCode%></td>
+                                            <td><a href="#" data-bs-toggle="modal" data-bs-target="#client<%= user._id %>">
+                                                <button type="button" class="btn btn-primary"><i class="bi bi-pencil"></i></button>
+                                            </a></td>
+                                        </tr>
+
+                                        <div class="modal fade" id="client<%= user._id %>" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Verander de rollen van <%=user.firstName + " " + user.lastName%></h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="/user/roles/?id=<%= user._id %>" method="POST">
+                                                            <b>Rollen:</b> 
+                                                            <div class="form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" id="client" name="client" <% if(user.roles[0] == "client" || user.roles[1] == "client") { %> checked <% } %>>
+                                                                    <label class="form-check-label" style="font-size: 14px;">Opdrachtgever</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" id="member" name="member" <% if(user.roles[0] == "member" || user.roles[1] == "member") { %> checked <% } %>>
+                                                                    <label class="form-check-label" style="font-size: 14px;">LOTUSslachtoffer</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer mt-4">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sluiten</button>
+                                                                <button type="submit" class="btn btn-success">Bevestigen</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- End Recent Sales -->
+                </div>
+            </div>
+            <!-- End Left side columns -->
+
+
+            <!-- Left side columns -->
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Alle leden</h5>
+                                <table class="display nowrap datatable" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Naam</th>
+                                            <th scope="col">E-mailadres</th>
+                                            <th scope="col">Acties</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% allMembers.forEach(user => { %>
+                                        <tr>
+                                            <td><%=user.firstName + " " + user.lastName%></td>
+                                            <% let role = ""; switch(user.activeRole[0]) { case "coordinator": role = "Coördinator"; break; case "client" : role = "Opdrachtgever"; break; case "member": role = "LOTUSslachtoffer"; break; } %>
+                                            <td><%=user.emailAddress%></td>
+                                            <td><a href="#" data-bs-toggle="modal" data-bs-target="#member<%= user._id %>">
+                                                <button type="button" class="btn btn-primary"><i class="bi bi-pencil"></i></button>
+                                            </a>
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#confirmation_remove_member_<%=user._id%>">
+                                                <button type="button" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                            </a></td>
+                                        </tr>
+                                        <div class="modal fade" id="member<%= user._id %>" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Verander de rollen van <%=user.firstName + " " + user.lastName%></h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="/user/roles/?id=<%= user._id %>" method="POST">
+                                                            <b>Rollen:</b> 
+                                                            <div class="form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" id="client" name="client" <% if(user.roles[0] == "client" || user.roles[1] == "client") { %> checked <% } %>>
+                                                                    <label class="form-check-label" style="font-size: 14px;">Opdrachtgever</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" id="member" name="member" <% if(user.roles[0] == "member" || user.roles[1] == "member") { %> checked <% } %>>
+                                                                    <label class="form-check-label" style="font-size: 14px;">LOTUSslachtoffer</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer mt-4">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sluiten</button>
+                                                                <button type="submit" class="btn btn-success">Bevestigen</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal fade" id="confirmation_remove_member_<%=user._id%>" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Bevestigen</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Weet je zeker dat je het lid wil verwijderen?
+                                                    </div>
+                                                    <form action="/user/delete/member?id=<%=user._id%>" method="POST">
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                                                            <button type="submit" class="btn btn-primary">Bevestig</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- End Recent Sales -->
+                </div>
+            </div>
+            <!-- End Left side columns -->
+
+            <!-- Right side columns -->
+            <div class="col-lg-4">
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Lid aanmaken</h5>
+                        <form action="/user/create" method="POST">
+                            <div class="col-12">
+                                <label class="form-label">E-mailadres</label>
+                                <input type="text" id="form3Example3c" name="emailAddress" class="form-control" value="<% if(typeof oldValues !== "undefined"){%><%=oldValues.emailAddress%><%}%>"/>
+                                <label class="form-label" style="color: red; padding: 10px 0px"><% if(typeof emailAddressErr !== "undefined"){%><%=emailAddressErr%><%}%></label>
+                            </div>
+
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100" type="submit">Aanmaken</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Uitgenodigde leden</h5>
+
+                        <table class="display nowrap datatable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th scope="col">E-mailadres</th>
+                                    <th scope="col">Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% allInvitedMembers.forEach(user => { %>
+                                <tr>
+                                    <td><%=user.emailAddress%></td>
+                                    <td>
+                                        <form id="notify_member_<%= user._id %>" action="/user/create/notify" method="POST">
+                                            <input type="hidden" name="emailAddress" value="<%= user.emailAddress %>" />
+                                            <a data-bs-toggle="modal" data-bs-target="#confirmation_remind_member_<%=user._id%>">
+                                                <button class="btn btn-primary">Stuur herinnering</button>
+                                            </a>
+                                        </form>
+                                    </td>
+                                </tr>
+
+
+                                <div class="modal fade" id="confirmation_remind_member_<%=user._id%>" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Bevestigen</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Weet je zeker dat je een herinnering wil sturen?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                                                <button form="notify_member_<%= user._id %>" type="submit" class="btn btn-primary">Bevestig</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- End Recent Activity -->
+            </div>
+
+            <!-- End Right side columns -->
+        </div>
+
+    </section>
+
+</main>
+<!-- End #main -->
+
+<%- include("footer/footer") %>
+
+<script>
+    function isNaN(x) {
+        return x !== x;
+    };
+
+  history.pushState(null, "", location.href.split("?")[0]);
+</script>

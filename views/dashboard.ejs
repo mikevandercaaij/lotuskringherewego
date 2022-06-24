@@ -1,0 +1,168 @@
+<%- include("header/header") %>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            </ol>
+        </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Welkom <%= session.user.firstName %></h5>
+                        <% let role = ""; switch(session.user.activeRole) { case "coordinator": role = "Coördinator"; break; case "client" : role = "Opdrachtgever"; break; case "member": role = "LOTUSslachtoffer"; break; } %>
+                        <p>Wat is het toch een mooie dag om een <%= role %> te zijn!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+                <% if (session.user.activeRole == "coordinator") { %>
+                    <div class="col-lg-3">
+                        <div class="card info-card sales-card">
+        
+                        <a href="/user">
+                        <div class="card-body">
+                            <h5 class="card-title">Gebruikers</h5>
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div class="ps-3">
+                                <% let user_card_text = ""; if (users_amount > 1 || users_amount == 0) {user_card_text = users_amount + " gebruikers" } else {user_card_text = users_amount + " gebruiker"} %>
+                                <p class="assignment_card_text"><%= user_card_text %></p>
+                            </div>
+                            </div>
+                        </div>
+                        </a>
+        
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="card info-card sales-card">
+        
+                        <a href="/assignment">
+                        <div class="card-body">
+                            <h5 class="card-title">Opdrachten</h5>
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-archive"></i>
+                            </div>
+                            <div class="ps-3">
+                                <% let assignment_card_text = ""; if (assignments_amount > 1 || assignments_amount == 0) {assignment_card_text = assignments_amount + " opdrachten" } else {assignment_card_text = assignments_amount + " opdracht"} %>
+                                <p class="assignment_card_text"><%= assignment_card_text %></p>
+                            </div>
+                            </div>
+                        </div>
+                        </a>
+        
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="card info-card sales-card">
+        
+                        <a href="/request">
+                        <div class="card-body">
+                            <h5 class="card-title">Verzoeken</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-inboxes"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <% let request_card_text = ""; if (request_amount > 1 || request_amount == 0) {request_card_text = request_amount + " verzoeken" } else {request_card_text = request_amount + " verzoek"} %>
+                                    <p class="request_card_text"><%= request_card_text %></p>
+                                </div>
+                            </div>
+                        </div>
+                        </a>
+        
+                        </div>
+                    </div>
+                <% } %>
+
+                <% if (session.user.activeRole == "client") { %>
+                    <div class="col-lg-3">
+                        <div class="card info-card sales-card">
+        
+                        <a href="/assignment">
+                        <div class="card-body">
+                            <h5 class="card-title">Mijn opdrachten</h5>
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-archive"></i>
+                            </div>
+                            <div class="ps-3">
+                                <% let assignment_card_text_approved = ""; if (assignments_amount_approved > 1 || assignments_amount_approved == 0) {assignment_card_text_approved = assignments_amount_approved + " goedgekeurde opdrachten" } else {assignment_card_text_approved = assignments_amount_approved + " goedgekeurde opdracht"} %>
+                                <p class="assignment_card_text"><%= assignment_card_text_approved %></p>
+
+                                <% let assignment_card_text_not_approved = ""; if (assignments_amount_not_approved > 1 || assignments_amount_not_approved == 0) {assignment_card_text_not_approved = assignments_amount_not_approved + " niet-goedgekeurde opdrachten" } else {assignment_card_text_not_approved = assignments_amount_not_approved + " niet-goedgekeurde opdracht"} %>
+                                <p class="assignment_card_text"><%= assignment_card_text_not_approved %></p>
+                            </div>
+                            </div>
+                        </div>
+                        </a>
+        
+                        </div>
+                    </div>
+                <% } %>
+
+                <% if (session.user.activeRole == "member") { %>
+                    <div class="col-lg-3">
+                        <div class="card info-card sales-card">
+        
+                        <a href="/assignment">
+                        <div class="card-body">
+                            <h5 class="card-title">Opdrachten</h5>
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-archive"></i>
+                            </div>
+                            <div class="ps-3">
+                                <% let assignment_card_text_open_assignments = ""; if (open_assignments_amount > 1 || open_assignments_amount == 0) {assignment_card_text_open_assignments = open_assignments_amount + " openstaande opdrachten" } else {assignment_card_text_open_assignments = open_assignments_amount + " openstaande opdracht"} %>
+                                <p class="assignment_card_text"><%= assignment_card_text_open_assignments %></p>
+                            </div>
+                            </div>
+                        </div>
+                        </a>
+        
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="card info-card sales-card">
+        
+                        <a href="/member/assignment">
+                        <div class="card-body">
+                            <h5 class="card-title">Mijn opdrachten</h5>
+                            
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-archive"></i>
+                            </div>
+                            <div class="ps-3">
+                                <% let assignment_card_text_my_assignments = ""; if (my_assignments_amount > 1 || my_assignments_amount == 0) {assignment_card_text_my_assignments = my_assignments_amount + " ingeschreven opdrachten" } else {assignment_card_text_my_assignments = my_assignments_amount + " ingeschreven opdracht"} %>
+                                <p class="assignment_card_text"><%= assignment_card_text_my_assignments %></p>
+                            </div>
+                            </div>
+                        </div>
+                        </a>
+        
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- End #main -->
+
+<%- include("footer/footer") %>

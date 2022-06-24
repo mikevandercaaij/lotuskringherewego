@@ -1,0 +1,448 @@
+<%- include("header/header") %>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <% if (url.includes("/assignment/update")) { %> <h1>Opdracht bewerken</h1> <% } else if (url == "/assignment/create") { %> <h1>Opdracht aanmaken</h1> <% } %>
+        <nav>
+            <% if (url == "/assignment/create") { %>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Opdracht aanmaken</li>
+                </ol>
+            <% } else if (url.includes("/assignment/update")) { %>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/assignment">Opdrachten</a></li>
+                    <li class="breadcrumb-item active">Opdracht bewerken</li>
+                </ol>
+            <% } %>
+        </nav>
+    </div>
+    <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-8 d-flex flex-column align-items-center justify-content-center">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <% if (url == "/assignment/create") { %>
+                            <form action="/assignment" method="POST" class="row g-3 needs-validation" novalidate>
+                        <% } else if (url.includes("/assignment/update")) { %>
+                            <form action="/assignment/update" method="POST" class="row g-3 needs-validation" novalidate>
+                                <input type="hidden" name="assignmentId" value="<%= assignmentId %>">
+
+                                <input type="hidden" name="assignmentStatus" value="<%= assignmentStatus %>">
+        
+                        <% } %>
+                        
+                            <div class="pt-4 pb-2">
+                                <% if (url == "/assignment/create") { %>
+                                    <h5 class="card-title text-center pb-0 fs-4">Opdracht aanmaken</h5>
+                                <% } else if (url.includes("/assignment/update")) { %>
+                                    <h5 class="card-title text-center pb-0 fs-4">Opdracht bewerken</h5>
+                                <% } %>  
+                                <h6 class="text-center fs-5">Persoonlijke gegevens</h6>
+                            </div>
+
+                            <div class="row pr-0">
+                                <% if(typeof assignment == "undefined") { %>
+                                    <div class="form-group mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="checkedOrNotProfile" name="checkedOrNotProfile" onclick='validate("<%= session.user.firstName %>","<%= session.user.lastName %>","<%= session.user.emailAddress %>","<%= session.user.phoneNumber %>","<%= session.user.street %>","<%= session.user.houseNumber %>","<%= session.user.houseNumberAddition %>","<%= session.user.postalCode %>","<%= session.user.town %>")'>
+                                            <label class="form-check-label" style="font-size: 14px;">Gebruik mijn persoonlijke gegevens</label>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Voornaam <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="firstName" id="firstName" class="form-control"  value="<%= assignment.firstName %>"/>
+                                        <% } else { %>
+                                            <input type="text" name="firstName" id="firstName" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.firstName%><%}%>"/>
+                                        <% } %>
+                                        <label class="form-label form-error"><% if(typeof firstNameErr != "undefined"){%><%=firstNameErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Achternaam <span class="requiredInput">*</span></label>
+
+                                        <% if (typeof assignment != "undefined") { %>
+                                        <input type="text"name="lastName" id="lastName" class="form-control"  value="<%=assignment.lastName%>" />
+                                        <% } else { %>
+                                            <input type="text"name="lastName" id="lastName" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.lastName%><%}%>" />
+                                        <% } %>
+                                        <label class="form-label form-error"><% if(typeof lastNameErr != "undefined"){%><%=lastNameErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">E-mailadres <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="emailAddress" id="emailAddress" class="form-control" value="<%= assignment.emailAddress %>"/>
+                                        <% } else { %>
+                                            <input type="text" name="emailAddress" id="emailAddress" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.emailAddress%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof emailAddressErr != "undefined"){%><%=emailAddressErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Telefoonnummer <span class="requiredInput">*</span></label>
+
+                                        <% if (typeof assignment != "undefined") { %>
+                                            <input type="text" name="phoneNumber" id="phoneNumber" class="form-control"  value="<%=assignment.phoneNumber%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="phoneNumber" id="phoneNumber" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.phoneNumber%><%}%>"/>
+                                        <% } %>   
+                                        <label class="form-label form-error"><% if(typeof phoneNumberErr != "undefined"){%><%=phoneNumberErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Straat <span class="requiredInput">*</span></label>
+
+                                        <% if (typeof assignment != "undefined") { %>
+                                            <input type="text" name="street" id="street" class="form-control"  value="<%=assignment.street%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="street" id="street" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.street%><%}%>"/>
+                                        <% } %>   
+                                        <label class="form-label form-error"><% if(typeof streetErr != "undefined"){%><%=streetErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Huisnummer <span class="requiredInput">*</span></label>
+
+                                        <% if (typeof assignment != "undefined") { %>
+                                            <input type="number" name="houseNumber" id="houseNumber" class="form-control"  min="0" value="<%=assignment.houseNumber%>"/>
+                                        <% } else { %>
+                                            <input type="number" name="houseNumber" id="houseNumber" class="form-control"  min="0" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.houseNumber%><%}%>"/>
+                                        <% } %>
+                                        <label class="form-label form-error"><% if(typeof houseNumberErr != "undefined"){%><%=houseNumberErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Huisnummer toevoeging</label>
+
+                                        <% if(typeof assignment != "undefined" && assignment.houseNumberAddition != "") { %>
+                                            <input type="text" name="houseNumberAddition" id="houseNumberAddition" class="form-control"  value="<%= assignment.houseNumberAddition %>"/>
+                                        <% } else { %>
+                                            <input type="text" name="houseNumberAddition" id="houseNumberAddition" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.houseNumberAddition%><%}%>"/>
+                                        <% } %>
+                                        <label class="form-label form-error"><% if(typeof houseNumberAdditionErr != "undefined"){%><%=houseNumberAdditionErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Postcode <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="postalCode" id="postalCode" class="form-control" value="<%= assignment.postalCode %>"/>
+                                        <% } else { %>
+                                            <input type="text" name="postalCode" id="postalCode" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.postalCode%><%}%>"/>
+                                        <% } %>
+                                        <label class="form-label form-error"><% if(typeof postalCodeErr != "undefined"){%><%=postalCodeErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Plaats <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="town" id="town" class="form-control"  value="<%= assignment.town %>"/>
+                                        <% } else { %>
+                                            <input type="text" name="town" id="town" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.town%><%}%>"/>
+                                        <% } %>
+                                        <label class="form-label form-error"><% if(typeof townErr != "undefined"){%><%=townErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row pr-0">
+                                <div class="col-md-6">
+                                    <div class="pt-4 pb-2">
+                                        <h6 class="text-center fs-5">Speelplaats gegevens</h6>
+                                    </div>
+                                    <% if(typeof assignment == "undefined") { %>
+                                        <div class="form-group mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkedOrNotPlayground" name="checkedOrNotPlayground" onclick='validate("<%= session.user.firstName %>","<%= session.user.lastName %>","<%= session.user.emailAddress %>","<%= session.user.phoneNumber %>","<%= session.user.street %>","<%= session.user.houseNumber %>","<%= session.user.houseNumberAddition %>","<%= session.user.postalCode %>","<%= session.user.town %>")'>
+                                                <label class="form-check-label" style="font-size: 14px;">Speelplaats adres is hetzelfde als persoonlijk adres</label>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    <div class="form-group">
+                                        <label class="form-label">Straat <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="playgroundStreet" id="playgroundStreet" class="form-control" value="<%=assignment.playgroundStreet%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="playgroundStreet" id="playgroundStreet" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.playgroundStreet%><%}%>"/>
+                                        <% } %>
+                                        
+                                        <label class="form-label form-error"><% if(typeof playgroundStreetErr != "undefined"){%><%=playgroundStreetErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Huisnummer <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="number" name="playgroundHouseNumber" id="playgroundHouseNumber" class="form-control" min="0" value="<%=assignment.playgroundHouseNumber%>"/>
+                                        <% } else { %>
+                                            <input type="number" name="playgroundHouseNumber" id="playgroundHouseNumber" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.playgroundHouseNumber%><%}%>"/>
+                                        <% } %>
+                                        
+                                        <label class="form-label form-error"><% if(typeof playgroundHouseNumberErr != "undefined"){%><%=playgroundHouseNumberErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Huisnummer toevoeging</label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="playgroundHouseNumberAddition" id="playgroundHouseNumberAddition" class="form-control" max="1" value="<%=assignment.playgroundHouseNumberAddition%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="playgroundHouseNumberAddition" id="playgroundHouseNumberAddition" class="form-control" max="1" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.playgroundHouseNumberAddition%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof playgroundHouseNumberAdditionErr != "undefined"){%><%=playgroundHouseNumberAdditionErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Postcode <span class="requiredInput">*</span></label>
+
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="playgroundPostalCode" id="playgroundPostalCode" class="form-control"  value="<%=assignment.playgroundPostalCode%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="playgroundPostalCode" id="playgroundPostalCode" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.playgroundPostalCode%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof playgroundPostalCodeErr != "undefined"){%><%=playgroundPostalCodeErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Plaats <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="text" name="playgroundTown" id="playgroundTown" class="form-control"  value="<%=assignment.playgroundTown%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="playgroundTown" id="playgroundTown" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.playgroundTown%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof playgroundTownErr != "undefined"){%><%=playgroundTownErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="pt-4 pb-2">
+                                        <h6 class="text-center fs-5">Grimeer gegevens (optioneel)</h6>
+                                    </div>
+
+                                <% if(typeof assignment == "undefined") { %>                                    
+                                    <div class="form-group mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="checkedOrNotMakeUp" name="checkedOrNotMakeUp" onclick='validate("<%= session.user.firstName %>","<%= session.user.lastName %>","<%= session.user.emailAddress %>","<%= session.user.phoneNumber %>","<%= session.user.street %>","<%= session.user.houseNumber %>","<%= session.user.houseNumberAddition %>","<%= session.user.postalCode %>","<%= session.user.town %>")'>
+                                            <label class="form-check-label" style="font-size: 14px;">Grimeer adres is hetzelfde als speelplaats adres</label>
+                                        </div>
+                                    </div>
+                                <% } %>  
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Straat</label>
+
+                                        <% if(typeof assignment != "undefined" && assignment.makeUpStreet != "") { %>
+                                            <input type="text" name="makeUpStreet" id="makeUpStreet" class="form-control" value="<%=assignment.makeUpStreet%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="makeUpStreet" id="makeUpStreet" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.makeUpStreet%><%}%>"/>
+                                        <% } %>
+                                        
+                                        <label class="form-label form-error"><% if(typeof makeUpStreetErr != "undefined"){%><%=makeUpStreetErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Huisnummer</label>
+
+                                        <% if(typeof assignment != "undefined" && assignment.makeUpHouseNumber != null) { %>
+                                            <input type="number" name="makeUpHouseNumber" id="makeUpHouseNumber" class="form-control" min="0" value="<%=assignment.makeUpHouseNumber%>"/>
+                                        <% } else { %>
+                                            <input type="number" name="makeUpHouseNumber" id="makeUpHouseNumber" class="form-control" min="0"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.makeUpHouseNumber%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof makeUpHouseNumberErr != "undefined"){%><%=makeUpHouseNumberErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Huisnummer toevoeging</label>
+
+                                        <% if(typeof assignment != "undefined" && assignment.makeUpHouseNumberAddition != "") { %>
+                                            <input type="text" name="makeUpHouseNumberAddition" id="makeUpHouseNumberAddition" class="form-control" value="<%=assignment.makeUpHouseNumberAddition%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="makeUpHouseNumberAddition" id="makeUpHouseNumberAddition" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.makeUpHouseNumberAddition%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof makeUpHouseNumberAdditionErr != "undefined"){%><%=makeUpHouseNumberAdditionErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Postcode</label>
+
+                                        <% if(typeof assignment != "undefined" && assignment.makeUpPostalCode != "") { %>
+                                            <input type="text" name="makeUpPostalCode" id="makeUpPostalCode" class="form-control"  value="<%=assignment.makeUpPostalCode%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="makeUpPostalCode" id="makeUpPostalCode" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.makeUpPostalCode%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof makeUpPostalCodeErr != "undefined"){%><%=makeUpPostalCodeErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Plaats</label>
+
+                                        <% if(typeof assignment != "undefined" && assignment.makeUpTown != "") { %>
+                                            <input type="text" name="makeUpTown" id="makeUpTown" class="form-control" value="<%=assignment.makeUpTown%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="makeUpTown" id="makeUpTown" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.makeUpTown%><%}%>"/>
+                                        <% } %>
+                                        
+                                        <label class="form-label form-error"><% if(typeof makeUpTownErr != "undefined"){%><%=makeUpTownErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row pb-4 pr-0">
+                                <div class="col-md-6">
+                                    <div class="pt-4 pb-2">
+                                        <h6 class="text-center fs-5">Overige</h6>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Begintijd <span class="requiredInput">*</span></label>
+                                    
+                                        <% if(typeof assignment != "undefined" && assignment.dateTime != "") { %>
+                                        <input type="datetime-local" name="dateTime" class="form-control"  value="<%= assignment.dateTime%>"/>
+                                        <% } else { %>
+                                        <input type="datetime-local" name="dateTime" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.dateTime%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof dateTimeErr != "undefined"){%><%=dateTimeErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Eindtijd <span class="requiredInput">*</span></label>
+                                    
+                                        <% if(typeof assignment != "undefined" && assignment.endTime != "") { %>
+                                        <input type="datetime-local" name="endTime" class="form-control" value="<%= assignment.endTime%>"/>
+                                        <% } else { %>
+                                        <input type="datetime-local" name="endTime" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.endTime%><%}%>"/>
+                                        <% } %>
+
+                                        <label class="form-label form-error"><% if(typeof endTimeErr != "undefined"){%><%=endTimeErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Aantal LOTUSslachtoffers <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                            <input type="number" name="amountOfLotusVictims" class="form-control"  value="<%=assignment.amountOfLotusVictims%>"/>
+                                        <% } else { %>
+                                            <input type="number" name="amountOfLotusVictims" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.amountOfLotusVictims%><%}%>"/>
+                                        <% } %>
+                                        
+                                        <label class="form-label form-error"><% if(typeof amountOfLotusVictimsErr != "undefined"){%><%=amountOfLotusVictimsErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Opmerkingen</label>
+
+                                        <% if(typeof assignment != "undefined" && assignment.comments != "") { %>
+                                            <input type="text" name="comments" class="form-control"  value="<%=assignment.comments%>"/>
+                                        <% } else { %>
+                                            <input type="text" name="comments" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.comments%><%}%>"/>
+                                        <% } %>
+                                        
+                                        <label class="form-label form-error"><% if(typeof commentsErr != "undefined"){%><%=commentsErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="pt-4 pb-2">
+                                        <h6 class="text-center fs-5">Factuur gegevens</h6>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Factuur e-mailadres <span class="requiredInput">*</span></label>
+
+                                        <% if(typeof assignment != "undefined") { %>
+                                        <input type="text" name="billingEmailAddress" id="billingEmailAddress" class="form-control"  value="<%= assignment.billingEmailAddress %>"/>
+                                        <% } else { %>
+                                        <input type="text" name="billingEmailAddress" id="billingEmailAddress" class="form-control"  value="<% if(typeof oldValues != "undefined"){%><%=oldValues.billingEmailAddress%><%}%>"/>
+                                        <% } %>
+                                        
+                                        <label class="form-label form-error"><% if(typeof billingEmailAddressErr != "undefined"){%><%=billingEmailAddressErr%><%}else{%>&nbsp;<%}%></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pr-0">
+                                <% if (url == "/assignment/create") { %>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary w-100">Opdracht aanmaken</button>
+                                    </div>
+                                <% } else if (url.includes("/assignment/update")) { %>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary w-100">Opdracht bewerken<%if(session.user.activeRole === "client") { %> <%= "aanvragen" %> <% } %></button>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<% if(typeof assignment == "undefined") { %>
+    <script>
+        '<% if(typeof checkedOrNotProfile != "undefined") { %>'
+            document.getElementById("checkedOrNotProfile").checked = true;
+            if (document.getElementById("firstName").value !== "") {
+                document.getElementById("firstName").setAttribute("readonly", true);
+            }
+            if (document.getElementById("lastName").value !== "") {
+                document.getElementById("lastName").setAttribute("readonly", true);
+            }
+            if (document.getElementById("emailAddress").value !== "") {
+                document.getElementById("emailAddress").setAttribute("readonly", true);
+            }
+            if (document.getElementById("phoneNumber").value !== "") {
+                document.getElementById("phoneNumber").setAttribute("readonly", true);
+            }
+            if (document.getElementById("street").value !== "") {
+                document.getElementById("street").setAttribute("readonly", true);
+            }
+            if (document.getElementById("houseNumber").value !== "") {
+                document.getElementById("houseNumber").setAttribute("readonly", true);
+                document.getElementById("houseNumberAddition").setAttribute("readonly", true);
+            }
+            if (document.getElementById("postalCode").value !== "") {
+                document.getElementById("postalCode").setAttribute("readonly", true);
+            }
+            if (document.getElementById("town").value !== "") {
+                document.getElementById("town").setAttribute("readonly", true);
+            }
+        '<%}%>'
+
+        '<% if(typeof checkedOrNotPlayground != "undefined") { %>'
+            document.getElementById("checkedOrNotPlayground").checked = true;
+            if (document.getElementById("playgroundStreet").value !== "") {
+                document.getElementById("playgroundStreet").setAttribute("readonly", true);
+            }
+            if (document.getElementById("playgroundHouseNumber").value !== "") {
+                document.getElementById("playgroundHouseNumber").setAttribute("readonly", true);
+                document.getElementById("playgroundHouseNumberAddition").setAttribute("readonly", true);
+            }
+            if (document.getElementById("playgroundPostalCode").value !== "") {
+                document.getElementById("playgroundPostalCode").setAttribute("readonly", true);
+            }
+            if (document.getElementById("playgroundTown").value !== "") {
+                document.getElementById("playgroundTown").setAttribute("readonly", true);
+            }
+        '<%}%>'
+
+        '<% if(typeof checkedOrNotMakeUp != "undefined") { %>'
+            document.getElementById("checkedOrNotMakeUp").checked = true;
+            if (document.getElementById("makeUpStreet").value !== "") {
+                document.getElementById("makeUpStreet").setAttribute("readonly", true);
+            }
+            if (document.getElementById("makeUpHouseNumber").value !== "") {
+                document.getElementById("makeUpHouseNumber").setAttribute("readonly", true);
+                document.getElementById("makeUpHouseNumberAddition").setAttribute("readonly", true);
+            }
+            if (document.getElementById("makeUpPostalCode").value !== "") {
+                document.getElementById("makeUpPostalCode").setAttribute("readonly", true);
+            }
+            if (document.getElementById("makeUpTown").value !== "") {
+                document.getElementById("makeUpTown").setAttribute("readonly", true);
+            }
+        '<%}%>'
+    </script>
+<% } %>
+
+<%- include("footer/footer") %>

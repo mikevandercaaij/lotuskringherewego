@@ -1,0 +1,41 @@
+{
+    "name": "lotus",
+    "version": "1.0.0",
+    "description": "Lotus Here We Go assignment handler",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/CKleijn/LOTUS.git"
+    },
+    "author": "Calvin Kleijn, Mick Holster, Guus van Damme, Mike van der Caaij",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/CKleijn/LOTUS/issues"
+    },
+    "homepage": "https://github.com/CKleijn/LOTUS#readme",
+    "dependencies": {
+        "axios": "^0.27.2",
+        "bcrypt": "^5.0.1",
+        "connect-flash": "^0.1.1",
+        "cookie-parser": "^1.4.6",
+        "cryptr": "^6.0.3",
+        "dotenv": "^16.0.1",
+        "ejs": "^3.1.8",
+        "express": "^4.18.1",
+        "express-session": "^1.17.3",
+        "generate-password": "^1.7.0",
+        "mongoose": "^6.3.4",
+        "nodemailer": "^4.7.0",
+        "pdfkit": "^0.13.0",
+        "phone": "^3.1.22",
+        "randomstring": "^1.2.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.16"
+    }
+}

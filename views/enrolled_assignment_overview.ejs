@@ -1,0 +1,302 @@
+<%- include("header/header") %>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Mijn opdrachten</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item active">Mijn opdrachten</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+
+            <!-- filter -->
+            <div class="col-12">                
+                <div class="col-sm-12 col-md-4 filterSortBtn">
+                    <label class="form-label sort_label"><i class="bi bi-arrow-down-up"></i> Sorteren op:</label>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6  col-lg-3">
+
+                <div class="col-sm-12  filterSortBtn">
+                    <form action="/member/assignment" method="GET">
+                        <% if (sortPlaygroundValue != undefined) { %>
+                            <% if (sortPlaygroundValue == "true") { %>
+                                <input type="hidden" name="sortPlayground" value="false">
+                            <% } else if (sortPlaygroundValue == "false") { %>
+                                <input type="hidden" name="sortPlayground" value="true">
+                            <% } %>
+                        <% } else { %>
+                            <input type="hidden" name="sortPlayground" value="false">
+                        <% } %>
+                        
+                            <% if (sortPlaygroundValue == "true") { %>
+                                <button type="submit" class="btn btn-primary sort_btn">Speelplaats<i class="bi bi-chevron-down sort_icon"></i></button>
+                            <% } else if (sortPlaygroundValue == "false") { %>
+                                <button type="submit" class="btn btn-primary sort_btn">Speelplaats<i class="bi bi-chevron-up sort_icon"></i></button>
+                            <% } else if (sortPlaygroundValue == undefined) { %>
+                                <button type="submit" class="btn btn-primary sort_btn">Speelplaats<i class="bi bi-dash-lg sort_icon"></i></button>
+                            <% } %>
+                    </form>
+                </div>
+                
+                <div class="col-sm-12  filterSortBtn">
+
+                <form action="/member/assignment" method="GET">
+                    <% if (sortDateValue != undefined) { %>
+                        <% if (sortDateValue == "true") { %>
+                            <input type="hidden" name="sortDate" value="false">
+                        <% } else if (sortDateValue == "false") { %>
+                            <input type="hidden" name="sortDate" value="true">
+                        <% } %>
+                    <% } else { %>
+                        <input type="hidden" name="sortDate" value="false">
+                    <% } %>
+                    
+                        <% if (sortDateValue == "true") { %>
+                            <button type="submit" class="btn btn-primary sort_btn">Datum<i class="bi bi-chevron-down sort_icon"></i></button>
+                        <% } else if (sortDateValue == "false") { %>
+                            <button type="submit" class="btn btn-primary sort_btn">Datum<i class="bi bi-chevron-up sort_icon"></i></button>
+                        <% } else if (sortDateValue == undefined) { %>
+                            <button type="submit" class="btn btn-primary sort_btn">Datum<i class="bi bi-dash-lg sort_icon"></i></button>
+                        <% } %>
+                </form>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="col-sm-12  filterSortBtn">
+
+                    <div class="remove_sort_class">
+                        <form action="/member/assignment" method="GET">
+                            <button type="submit" class="btn btn-secondary sort_btn">Verwijder filters<i class="bi bi-x-lg sort_icon"></i></button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 filterSortSearch">
+                    <form class="search-form d-flex align-items-center" action="/member/assignment" method="GET">
+                        <input type="text" name="keyword" class="search-input" placeholder="Zoek op speelplaats...">
+                        <button type="submit" title="Zoeken"><i class="bi bi-search"></i></button>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- end of filter -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div>
+                    <div class="row">
+                        <% if(assignments.length > 0) { %>
+                            <% assignments.forEach(assignment => { %>
+
+                                <div class="col-lg-6">
+                                
+                                    <div class="card">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#assignment<%= assignment._id %>">
+                                        <div class="card-body assignment_card">
+                                            <h5 class="card-title"><% if(assignment.amountOfLotusVictims === 1) { %> <%= assignment.amountOfLotusVictims + " LOTUSslachtoffer nodig in " + assignment.playgroundTown %> <%} else { %> <%= assignment.amountOfLotusVictims + " LOTUSslachtoffers nodig in " + assignment.playgroundTown %> <% } %> <% if(assignment.cancelStatus == "Uitschrijfverzoek ingediend") { %><i class="bi bi-hourglass-split" style="float: right; font-size: 30px; color: #435df1;"></i><% } %></h5>
+                                            <h6>Opdrachtgegevens</h6>
+                                            <b>Opdrachtgever:</b> <%= assignment.firstName + " " + assignment.lastName %>
+                                            <br>
+                                            <b>Datum:</b> <%= assignment.formattedDateTime %> 
+                                            <br>
+                                            <b>Deelnemers:</b> <%= assignment.participatingLotusVictims.length + "/" + assignment.amountOfLotusVictims %>
+                                            <br>
+                                            <br>
+                                            <h6>Locatiegegevens</h6>
+                                            <b>Adres:</b> <%= assignment.playgroundStreet + " " + assignment.playgroundHouseNumber + assignment.playgroundHouseNumberAddition %>
+                                            <br>
+                                            <b>Postcode:</b> <%= assignment.playgroundPostalCode %>
+                                            <br>
+                                            <b>Plaats:</b> <%= assignment.playgroundTown %>
+                                            
+                                        </div>
+                                    </a>
+                                        <div class="card-footer">
+                                            <div class="assignmentDataHolder">
+                                                <a href="#" style="color: #798eb3" data-bs-toggle="modal" data-bs-target="#assignment<%= assignment._id %>">
+                                                    <span style="text-decoration: none">Klik voor meer informatie</span>
+                                                </a>
+                                                <div>
+                                                    <% if(assignment.status == "Ingeschreven voltooid" && assignment.cancelStatus != "Uitschrijfverzoek ingediend") { %>
+                                                        <form action="/assignment/cancel" method="POST">
+                                                            <input type="hidden" name="status" value="<%= assignment.status %>">
+                                                            <input type="hidden" name="requestType" value="cancelEnrollment">
+                                                            <input type="hidden" name="requestId" value="<%= assignment.requestId %>">
+                                                            <input type="hidden" name="assignmentId" value="<%= assignment._id %>">
+                                                            <button type="submit" class="btn btn-danger">Uitschrijven</button>
+                                                        </form>
+                                                    <% } else { %> 
+                                                        <form action="/assignment/cancel" method="POST">
+                                                            <input type="hidden" name="status" value="<%= assignment.status %>">
+                                                            <input type="hidden" name="cancelStatus" value="<%= assignment.cancelStatus %>">
+                                                            <input type="hidden" name="requestType" value="cancelEnrollment">
+                                                            <input type="hidden" name="requestId" value="<%= assignment.requestId %>">
+                                                            <input type="hidden" name="assignmentId" value="<%= assignment._id %>">
+                                                            <button type="submit" class="btn btn-danger">Uitschrijving annuleren</button>
+                                                        </form>
+                                                    <% } %> 
+                                                </div>
+                                            </div>
+                                        
+                                        </div>
+                                    </div>
+                                
+                            </div>
+
+                            <div class="modal fade" id="assignment<%= assignment._id %>" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title"><% if(assignment.amountOfLotusVictims === 1) { %> <%= assignment.amountOfLotusVictims + " LOTUSslachtoffer nodig in " + assignment.playgroundTown %> <%} else { %> <%= assignment.amountOfLotusVictims + " LOTUSslachtoffers nodig in " + assignment.playgroundTown %> <% } %></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+        
+                                        <h6>Opdrachtgever</h6>
+                                
+                                            <% const a = assignment %> 
+        
+                                                <b>Voornaam:</b> <%= a.firstName %>
+                                                <br>
+                                                <b>Achternaam:</b> <%= a.lastName %>
+                                                <br>
+                                                <b>E-mailadres:</b> <%= a.emailAddress %> 
+                                                <br>
+                                                <b>Telefoonnummer:</b> <%= a.phoneNumber %> 
+                                                <br>
+                                                <b>Straat:</b> <%= a.street %> 
+                                                <br>
+                                                <b>Huisnummer:</b> <%= a.houseNumber %> 
+                                                <br>
+                                                <% if(a.houseNumberAddition != "" ) { %> 
+                                                    <b>Huisnummer toevoeging:</b> <%= a.houseNumberAddition %> 
+                                                    <br>
+                                                <% } %> 
+                                                <b>Plaats:</b> <%= a.town %> 
+                                                <br>
+                                                <b>Postcode:</b> <%= a.postalCode %> 
+                                                <br>
+                                                <br>
+        
+                                                <h6>Speelplaats adres gegevens</h6>
+                                                <b>Straat:</b> <%= a.playgroundStreet %> 
+                                                <br>
+                                                <b>Huisnummer:</b> <%= a.playgroundHouseNumber %> 
+                                                <br>
+                                                <% if(a.playgroundHouseNumberAddition != "" ) { %> 
+                                                    <b>Huisnummer toevoeging:</b> <%= a.playgroundHouseNumberAddition %> 
+                                                    <br>
+                                                <% } %> 
+                                                <b>Plaats:</b> <%= a.playgroundTown %> 
+                                                <br>
+                                                <b>Postcode:</b> <%= a.playgroundPostalCode %> 
+        
+                                                <br>
+                                                <br>
+        
+                                                <% if(a.makeUpStreet != "" || a.makeUpHouseNumber != null || a.makeUpHouseNumberAddition != "" || a.makeUpTown != "" || a.makeUpPostalCode != "" ) { %>
+        
+                                                <h6>Grimeer adres gegevens</h6>
+        
+                                                    <% if(a.makeUpStreet != "" ) { %> 
+                                                        <b>Straat:</b> <%= a.makeUpStreet %> 
+                                                        <br>
+                                                    <% } %> 
+        
+                                                    <% if(a.makeUpHouseNumber != null ) { %> 
+                                                        <b>Huisnummer:</b> <%= a.makeUpHouseNumber %> 
+                                                        <br>
+                                                    <% } %> 
+        
+                                                    <% if(a.makeUpHouseNumberAddition != "" ) { %> 
+                                                        <b>Huisnummer toevoeging:</b> <%= a.makeUpHouseNumberAddition %> 
+                                                        <br>
+                                                    <% } %> 
+        
+                                                    <% if(a.makeUpTown != "" ) { %> 
+                                                        <b>Plaats:</b> <%= a.makeUpTown %> 
+                                                        <br>
+                                                    <% } %> 
+        
+                                                    <% if(a.makeUpPostalCode != "" ) { %> 
+                                                        <b>Postcode:</b> <%= a.makeUpPostalCode %> 
+                                                        <br>
+                                                    <% } %> 
+        
+                                                <br>
+                                                <% } %> 
+        
+                                                <h6>Factuurgegevens</h6>
+                                                <b>E-mailadres:</b> <%= a.billingEmailAddress  %> 
+                                                <br>
+                                                <br>
+        
+                                                <h6>Overige</h6>
+                                                <b>Vind plaats op:</b> <%= a.formattedDateTime %> 
+                                                <br>
+                                                <b>Benodigde LOTUSslachtoffers:</b> <%= a.amountOfLotusVictims %> 
+                                            
+                                                <% if(a.comments != "" ) { %> 
+                                                    <br>
+                                                    <b>Opmerkingen:</b> <%= a.comments %> 
+                                                <% } %> 
+        
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sluiten</button>
+                                        <% if(assignment.status == "Ingeschreven voltooid" && assignment.cancelStatus != "Uitschrijfverzoek ingediend") { %>
+                                            <% if(assignment.participatingLotusVictims.length == assignment.amountOfLotusVictims) { %>
+                                            <a href="assignment/pdf?assignmentId=<%= assignment._id %>">
+                                                <button type="button" class="btn btn-primary" style="color: white;">Download contract</button>
+                                            </a>
+                                            <% } %>
+                                            <form action="/assignment/cancel" method="POST">
+                                                <input type="hidden" name="status" value="<%= assignment.status %>">
+                                                <input type="hidden" name="requestType" value="cancelEnrollment">
+                                                <input type="hidden" name="requestId" value="<%= a.requestId %>">
+                                                <input type="hidden" name="assignmentId" value="<%= a._id %>">
+                                                <button type="submit" class="btn btn-danger">Uitschrijven</button>
+                                            </form>
+                                        <% } else { %> 
+                                            <form action="/assignment/cancel" method="POST">
+                                                <input type="hidden" name="status" value="<%= assignment.status %>">
+                                                <input type="hidden" name="cancelStatus" value="<%= assignment.cancelStatus %>">
+                                                <input type="hidden" name="requestType" value="cancelEnrollment">
+                                                <input type="hidden" name="requestId" value="<%= a.requestId %>">
+                                                <input type="hidden" name="assignmentId" value="<%= a._id %>">
+                                                <button type="submit" class="btn btn-danger">Uitschrijving annuleren</button>
+                                            </form>
+                                        <% } %> 
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                        <% } else { %> 
+                            <div class="col-lg-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Je hebt momenteel geen opdrachten</h5>
+                                        <p class="card-text">Schrijf je in voor een opdracht!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<%- include("footer/footer") %>

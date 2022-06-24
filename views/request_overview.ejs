@@ -1,0 +1,749 @@
+<%- include("header/header") %>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Verzoeken</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item active">Verzoeken</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+
+            <% if(typeof alertText != "undefined" && alertText !== "") { %>
+
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-1"></i>
+                            <%= alertText %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>
+                    </div>
+                </div>
+        
+                <% } %>
+
+            <% if(requests.length === 0) { %>
+
+            <div class="col-md-6 col-lg-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Er zijn momenteel geen verzoeken</h5>
+                        <p class="card-text">Kijk regelmatig in je mail voor updates!</p>
+                    </div>
+                </div>
+            </div>
+
+            <% } %> <% requests.reverse().forEach(request => { %> <% let role = ""; switch(request.user.activeRole[0]) { case "coordinator": role = "Coördinator"; break; case "client" : role = "Opdrachtgever"; break; case "member": role = "LOTUSslachtoffer"; break; } %>
+            <div class="col-sm-12 col-md-6 col-lg-4">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#request_<%= request._id %>">
+                    <div class="card">
+                        <div class="card-body request_card">
+
+                            <% const requestAge = msToTime((new Date().getTime() - new Date(request.requestDate).getTime()));
+                                    
+                            function msToTime(duration) {
+                                const minutes = Math.floor((duration / (1000 * 60)) % 60);
+                                const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+                                const days = Math.floor(duration / (24*60*60*1000));
+
+                                if(minutes === 0 && hours == 0 && days == 0 || minutes === 1 && hours == 0 && days == 0) {
+                                    return "1 minuut";
+                                } else if (hours == 0 && days == 0) {
+                                    return minutes + " minuten"
+                                } else if(days === 0) {
+                                    return hours + " uur"
+                                } else if(days === 1) {
+                                    return "1 dag"
+                                } else {
+                                    return days + " dagen"
+                                }
+                            } %>
+
+                            <% if(request.type === "createAssignment") { %>
+                            <h5 class="card-title">
+                                <i class="bi bi-file-text"></i>
+                                <%= request.user.firstName + " wil een opdracht aanmaken" %>
+                            </h5>
+                            <p style="margin-bottom:0">
+                                <b>Naam:</b>
+                                <%= request.user.firstName + " " + request.user.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= request.user.emailAddress %>
+                                <br />
+                                <b>Rol:</b>
+                                Opdrachtgever
+                                <br />
+                                <br />
+                                <b>Type:</b>
+                                Opdracht aanmaken
+                                <br />
+                                <br />
+                                <i class="bi bi-clock"  style="font-size: 16px; color: #012970;"></i> <span><%= requestAge %> </span>
+                                
+                            </p>
+                            <% } else if(request.type === "enrollment") { %>
+                            <h5 class="card-title">
+                                <i class="bi bi-pencil-square"></i>
+                                <%= request.user.firstName + " wil zich inschrijven" %>
+                                
+                            </h5>
+                            <p style="margin-bottom:0">
+                                <b>Naam:</b>
+                                <%= request.user.firstName + " " + request.user.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= request.user.emailAddress %>
+                                <br />
+                                <b>Rol:</b>
+                                LOTUSslachtoffer
+                                <br />
+                                <br />
+                                <b>Type:</b>
+                                Inschrijven
+                                <br />
+                                <br />
+                                <i class="bi bi-clock"  style="font-size: 16px; color: #012970;"></i> <span><%= requestAge %> </span>
+                                
+                            </p>
+                            <% } else if(request.type === "cancelEnrollment") { %>
+                            <h5 class="card-title">
+                                <i class="bi bi-trash"></i>
+                                <%= request.user.firstName + " wil zich uitschrijven" %>
+                            </h5>
+                            <p style="margin-bottom:0">
+                                <b>Naam:</b>
+                                <%= request.user.firstName + " " + request.user.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= request.user.emailAddress %>
+                                <br />
+                                <b>Rol:</b>
+                                LOTUSslachtoffer
+                                <br />
+                                <br />
+                                <b>Type:</b>
+                                Uitschrijven
+                                <br />
+                                <br />
+                                <i class="bi bi-clock"  style="font-size: 16px; color: #012970;"></i> <span><%= requestAge %> </span>
+
+                            </p>
+
+                            <% } else if(request.type === "deleteAssignment") { %>
+                            <h5 class="card-title">
+                                <i class="bi bi-trash"></i>
+                                <%= request.user.firstName + " wil een opdracht verwijderen" %>
+                            </h5>
+                            <p style="margin-bottom:0">
+                                <b>Naam:</b>
+                                <%= request.user.firstName + " " + request.user.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= request.user.emailAddress %>
+                                <br />
+                                <b>Rol:</b>
+                                Opdrachtgever
+                                <br />
+                                <br />
+                                <b>Type:</b>
+                                Opdracht verwijderen
+                                <br />
+                                <br />
+                                <i class="bi bi-clock"  style="font-size: 16px; color: #012970;"></i> <span><%= requestAge %> </span>
+                            </p>
+                            <% } else if(request.type === "updateAssignment") { %>
+                            <h5 class="card-title">
+                                <i class="bi bi-pencil"></i>
+                                <%= request.user.firstName + " wil een opdracht bewerken" %>
+                            </h5>
+                            <p style="margin-bottom:0">
+                                <b>Naam:</b>
+                                <%= request.user.firstName + " " + request.user.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= request.user.emailAddress %>
+                                <br />
+                                <b>Rol:</b>
+                                Opdrachtgever
+                                <br />
+                                <br />
+                                <b>Type:</b>
+                                Opdracht bewerken
+                                <br />
+                                <br />
+                                <i class="bi bi-clock"  style="font-size: 16px; color: #012970;"></i> <span><%= requestAge %> </span>
+                            </p>
+                            <% } else if(request.type === "addClientRole") { %>
+                                <h5 class="card-title">
+                                    <i class="bi bi-person-bounding-box"></i>
+                                    <%= request.user.firstName + " wil ook een opdrachtgever worden" %>
+                                    
+                                </h5>
+                                <p style="margin-bottom:0">
+                                    <b>Naam:</b>
+                                    <%= request.user.firstName + " " + request.user.lastName %>
+                                    <br />
+                                    <b>E-mailadres:</b>
+                                    <%= request.user.emailAddress %>
+                                    <br />
+                                    <b>Huidige rol:</b>
+                                    LOTUSslachtoffer
+                                    <br />
+                                    <b>Gewenste rol:</b>
+                                    Opdrachtgever
+                                    <br />
+                                    <br />
+                                    <b>Type:</b>
+                                    Rol toevoegen
+                                    <br />
+                                    <br />
+                                    <i class="bi bi-clock"  style="font-size: 16px; color: #012970;"></i> <span><%= requestAge %> </span>
+                                    
+                                </p>
+                            <% } else {%>
+                            <p>pas request_overview.ejs aan</p>
+                            <% } %>
+                        </div>
+                        <div class="card-footer">Klik om het verzoek te beoordelen</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="modal fade" id="request_<%= request._id %>" tabindex="-1">
+                <% if(request.type === "createAssignment" || request.type === "deleteAssignment" || request.type === "updateAssignment") { %>
+                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                    <% } else { %>
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <% } %>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <% let requestTypeModal = ""; switch(request.type) { case "createAssignment": requestTypeModal = "(Opdracht aanmaken)"; break; case "updateAssignment": requestTypeModal = "(Opdracht Bewerken)"; break; case "deleteAssignment": requestTypeModal = "(Opdracht verwijderen)"; break; case "cancelEnrollment": requestTypeModal = "(Uitschrijving)"; break; case "enrollment": requestTypeModal = "(Inschrijving)"; break; } %>
+                                <h5 class="modal-title"><%= "Verzoek van " + request.user.firstName + " beoordelen " + requestTypeModal%></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <% if(request.type === "createAssignment" || request.type === "deleteAssignment" ) { %>
+                                <h6>Opdrachtgever</h6>
+
+                                <% const a = request.assignment %>
+
+                                <b>Voornaam:</b>
+                                <%= a.firstName %>
+                                <br />
+                                <b>Achternaam:</b>
+                                <%= a.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= a.emailAddress %>
+                                <br />
+                                <b>Telefoonnummer:</b>
+                                <%= a.phoneNumber %>
+                                <br />
+                                <b>Straat:</b>
+                                <%= a.street %>
+                                <br />
+                                <b>Huisnummer:</b>
+                                <%= a.houseNumber %>
+                                <br />
+                                <% if(a.houseNumberAddition != "" ) { %>
+                                <b>Huisnummer toevoeging:</b>
+                                <%= a.houseNumberAddition %>
+                                <br />
+                                <% } %>
+                                <b>Plaats:</b>
+                                <%= a.town %>
+                                <br />
+                                <b>Postcode:</b>
+                                <%= a.postalCode %>
+                                <br />
+                                <br />
+
+                                <h6>Speelplaats adres gegevens</h6>
+                                <b>Straat:</b>
+                                <%= a.playgroundStreet %>
+                                <br />
+                                <b>Huisnummer:</b>
+                                <%= a.playgroundHouseNumber %>
+                                <br />
+                                <% if(a.playgroundHouseNumberAddition != "" ) { %>
+                                <b>Huisnummer toevoeging:</b>
+                                <%= a.playgroundHouseNumberAddition %>
+                                <br />
+                                <% } %>
+                                <b>Plaats:</b>
+                                <%= a.playgroundTown %>
+                                <br />
+                                <b>Postcode:</b>
+                                <%= a.playgroundPostalCode %>
+
+                                <br />
+                                <br />
+
+                                <% if(a.makeUpStreet != "" || a.makeUpHouseNumber != null || a.makeUpHouseNumberAddition != "" || a.makeUpTown != "" || a.makeUpPostalCode != "" ) { %>
+
+                                <h6>Grimeer adres gegevens</h6>
+
+                                <% if(a.makeUpStreet != "" ) { %>
+                                <b>Straat:</b>
+                                <%= a.makeUpStreet %>
+                                <br />
+                                <% } %> <% if(a.makeUpHouseNumber != null ) { %>
+                                <b>Huisnummer:</b>
+                                <%= a.makeUpHouseNumber %>
+                                <br />
+                                <% } %> <% if(a.makeUpHouseNumberAddition != "" ) { %>
+                                <b>Huisnummer toevoeging:</b>
+                                <%= a.makeUpHouseNumberAddition %>
+                                <br />
+                                <% } %> <% if(a.makeUpTown != "" ) { %>
+                                <b>Plaats:</b>
+                                <%= a.makeUpTown %>
+                                <br />
+                                <% } %> <% if(a.makeUpPostalCode != "" ) { %>
+                                <b>Postcode:</b>
+                                <%= a.makeUpPostalCode %>
+                                <br />
+                                <% } %>
+
+                                <br />
+                                <% } %>
+
+                                <h6>Factuurgegevens</h6>
+                                <b>E-mailadres:</b>
+                                <%= a.billingEmailAddress %>
+                                <br />
+                                <br />
+
+                                <h6>Overige</h6>
+                                <b>Vind plaats op:</b>
+                                <%= new Date(a.dateTime).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}) %>
+                                <br />
+                                <b>Benodigde LOTUSslachtoffers:</b>
+                                <%= a.amountOfLotusVictims %> <% if(a.comments != "" ) { %>
+                                <br />
+                                <b>Opmerkingen:</b>
+                                <%= a.comments %> <% } %> <% } else if(request.type === "updateAssignment" ) { %>
+                                <h6>Opdrachtgever</h6>
+
+                                <% const a = request.assignment %> <% const b = request.updatedAssignment %>
+
+                                <b>Voornaam:</b>
+
+                                <% if(a.firstName != b.firstName) { %> 
+                                    <span class="oldRequestValue"><%= a.firstName %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.firstName %></span>
+                                    <% } else { %> 
+                                    <%= a.firstName %> 
+                                <% } %> 
+
+                                <br />
+                                <b>Achternaam:</b>
+
+                                <% if(a.lastName != b.lastName) { %> 
+                                    <span class="oldRequestValue"><%= a.lastName %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.lastName %></span>
+                                    <% } else { %> 
+                                    <%= a.lastName %> 
+                                <% } %> 
+
+                                <br />
+                                <b>E-mailadres:</b>
+
+                                <% if(a.emailAddress != b.emailAddress) { %> 
+                                    <span class="oldRequestValue"><%= a.emailAddress %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.emailAddress %></span>
+                                    <% } else { %> 
+                                    <%= a.emailAddress %> 
+                                <% } %> 
+
+                                <br />
+                                <b>Telefoonnummer:</b>
+
+                                <% if(a.phoneNumber != b.phoneNumber) { %> 
+                                    <span class="oldRequestValue"><%= a.phoneNumber %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.phoneNumber %></span>
+                                    <% } else { %> 
+                                    <%= a.phoneNumber %> 
+                                <% } %> 
+
+                                <br />
+                                <b>Straat:</b>
+
+                                <% if(a.street != b.street) { %> 
+                                    <span class="oldRequestValue"><%= a.street %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.street %></span>
+                                    <% } else { %> 
+                                    <%= a.street %> 
+                                <% } %> 
+
+                                <br />
+                                <b>Huisnummer:</b>
+
+                                <% if(a.houseNumber != b.houseNumber) { %> 
+                                    <span class="oldRequestValue"><%= a.houseNumber %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.houseNumber %></span>
+                                    <% } else { %> 
+                                    <%= a.houseNumber %> 
+                                <% } %> 
+
+                                <br />
+                                <% if(a.houseNumberAddition != "" || b.houseNumberAddition != "" ) { %>
+                                <b>Huisnummer toevoeging:</b>
+
+                                <% if(a.houseNumberAddition != b.houseNumberAddition) { %> 
+                                    <span class="oldRequestValue"><%= a.houseNumberAddition %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.houseNumberAddition %></span>
+                                    <% } else { %> 
+                                    <%= a.houseNumberAddition %> 
+                                <% } %> 
+
+                                <br />
+                                <% } %>
+                                <b>Plaats:</b>
+                                
+                                <% if(a.town != b.town) { %> 
+                                    <span class="oldRequestValue"><%= a.town %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.town %></span>
+                                    <% } else { %> 
+                                    <%= a.town %> 
+                                <% } %> 
+
+
+                                <br />
+                                <b>Postcode:</b>
+
+                                <% if(a.postalCode != b.postalCode) { %> 
+                                    <span class="oldRequestValue"><%= a.postalCode %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.postalCode %></span>
+                                    <% } else { %> 
+                                    <%= a.postalCode %> 
+                                <% } %> 
+                                <br />
+                                <br />
+
+                                <h6>Speelplaats adres gegevens</h6>
+                                <b>Straat:</b>
+
+                                <% if(a.playgroundStreet != b.playgroundStreet) { %> 
+                                    <span class="oldRequestValue"><%= a.playgroundStreet %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.playgroundStreet %></span>
+                                    <% } else { %> 
+                                    <%= a.playgroundStreet %> 
+                                <% } %> 
+
+                                <br />
+                                <b>Huisnummer:</b>
+
+                                <% if(a.playgroundHouseNumber != b.playgroundHouseNumber) { %> 
+                                    <span class="oldRequestValue"><%= a.playgroundHouseNumber %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.playgroundHouseNumber %></span>
+                                    <% } else { %> 
+                                    <%= a.playgroundHouseNumber %> 
+                                <% } %> 
+
+                                <br />
+                                <% if(a.playgroundHouseNumberAddition != "" || b.playgroundHouseNumberAddition != "" ) { %>
+                                <b>Huisnummer toevoeging:</b>
+
+                                <% if(a.playgroundHouseNumberAddition != b.playgroundHouseNumberAddition) { %> 
+                                    <span class="oldRequestValue"><%= a.playgroundHouseNumberAddition %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.playgroundHouseNumberAddition %></span>
+                                    <% } else { %> 
+                                    <%= a.playgroundHouseNumberAddition %> 
+                                <% } %> 
+
+                                <br />
+                                <% } %>
+                                <b>Plaats:</b>
+                                
+                                <% if(a.playgroundTown != b.playgroundTown) { %> 
+                                    <span class="oldRequestValue"><%= a.playgroundTown %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.playgroundTown %></span>
+                                    <% } else { %> 
+                                    <%= a.playgroundTown %> 
+                                <% } %> 
+
+
+                                <br />
+                                <b>Postcode:</b>
+
+                                <% if(a.playgroundPostalCode != b.playgroundPostalCode) { %> 
+                                    <span class="oldRequestValue"><%= a.playgroundPostalCode %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.playgroundPostalCode %></span>
+                                    <% } else { %> 
+                                    <%= a.playgroundPostalCode %> 
+                                <% } %> 
+
+                                <br />
+                                <br />
+
+                                <% if(a.makeUpStreet != "" || b.makeUpStreet != "" || a.makeUpHouseNumber != null || b.makeUpHouseNumber != null || a.makeUpHouseNumberAddition != "" || b.makeUpHouseNumberAddition != "" || a.makeUpTown != "" || b.makeUpTown != "" || a.makeUpPostalCode != "" || b.makeUpPostalCode != "" ) { %>
+
+                                <h6>Grimeer adres gegevens</h6>
+
+                                <% if(a.makeUpStreet != "" || b.makeUpStreet != "" ) { %>
+                                <b>Straat:</b>
+
+                                <% if(a.makeUpStreet != b.makeUpStreet) { %> 
+                                    <span class="oldRequestValue"><%= a.makeUpStreet %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.makeUpStreet %></span>
+                                    <% } else { %> 
+                                    <%= a.makeUpStreet %> 
+                                <% } %> 
+                                <br />
+                                <% } %> <% if(a.makeUpHouseNumber != null || b.makeUpHouseNumber != null ) { %>
+                                <b>Huisnummer:</b>
+                                <% if(a.makeUpHouseNumber != b.makeUpHouseNumber) { %> 
+                                    <span class="oldRequestValue"><%= a.makeUpHouseNumber %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.makeUpHouseNumber %></span>
+                                    <% } else { %> 
+                                    <%= a.makeUpHouseNumber %> 
+                                <% } %> 
+                                <br />
+                                <% } %> <% if(a.makeUpHouseNumberAddition != "" || b.makeUpHouseNumberAddition != "" ) { %>
+                                <b>Huisnummer toevoeging:</b>
+
+                                <% if(a.makeUpHouseNumberAddition != b.makeUpHouseNumberAddition) { %> 
+                                    <span class="oldRequestValue"><%= a.makeUpHouseNumberAddition %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.makeUpHouseNumberAddition %></span>
+                                    <% } else { %> 
+                                    <%= a.makeUpHouseNumberAddition %> 
+                                <% } %> 
+
+                                <br />
+                                <% } %> <% if(a.makeUpTown != "" || b.makeUpTown != "" ) { %>
+                                <b>Plaats:</b>
+
+                                <% if(a.makeUpTown != b.makeUpTown) { %> 
+                                    <span class="oldRequestValue"><%= a.makeUpTown %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.makeUpTown %></span>
+                                    <% } else { %> 
+                                    <%= a.makeUpTown %> 
+                                <% } %> 
+
+                                <br />
+                                <% } %> <% if(a.makeUpPostalCode != "" || b.makeUpPostalCode != "" ) { %>
+                                <b>Postcode:</b>
+
+                                <% if(a.makeUpPostalCode != b.makeUpPostalCode) { %> 
+                                    <span class="oldRequestValue"><%= a.makeUpPostalCode %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.makeUpPostalCode %></span>
+                                    <% } else { %> 
+                                    <%= a.makeUpPostalCode %> 
+                                <% } %> 
+
+                                <br />
+                                <% } %>
+
+                                <br />
+                                <% } %>
+
+                                <h6>Factuurgegevens</h6>
+                                <b>E-mailadres:</b>
+
+                                <% if(a.billingEmailAddress != b.billingEmailAddress) { %> 
+                                    <span class="oldRequestValue"><%= a.billingEmailAddress %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.billingEmailAddress %></span>
+                                    <% } else { %> 
+                                    <%= a.billingEmailAddress %> 
+                                <% } %> 
+
+                                <br />
+                                <br />
+
+                                <h6>Overige</h6>
+                                <b>Vind plaats op:</b>
+
+                                <% const oldParsedDate = new Date(a.dateTime).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+                                const newParsedDate = new Date(b.dateTime).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}); %> 
+
+                                <% if(oldParsedDate != newParsedDate) { %> 
+                                    <span class="oldRequestValue"><%= oldParsedDate %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= newParsedDate %></span>
+                                    <% } else { %> 
+                                    <%= oldParsedDate %> 
+                                    <% } %> 
+
+                                <br />
+                                <b>Benodigde LOTUSslachtoffers:</b> 
+                                <% if(a.amountOfLotusVictims != b.amountOfLotusVictims) { %> 
+                                <span class="oldRequestValue"><%= a.amountOfLotusVictims %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.amountOfLotusVictims %></span>
+                                <% } else { %> 
+                                <%= a.amountOfLotusVictims %> 
+                                <% } %> 
+
+                                
+                                <% if(a.comments != "" || b.comments != "" ) { %>
+                                    <br />
+                                    <b>Opmerkingen:</b>
+                                    <% if(a.comments != b.comments) { %> 
+                                        <span class="oldRequestValue"><%= a.comments %></span> <i class="bi bi-arrow-right"></i> <span class="newRequestValue"><%= b.comments %></span>
+                                        <% } else { %> 
+                                        <%= a.comments %> 
+                                        <% } %> 
+
+                                <% } %>
+                                
+                                <% } else if(request.type === "enrollment" || request.type === "cancelEnrollment") { %>
+                                <h6>LOTUSslachtoffer</h6>
+                                <% const u = request.user %>
+                                <b>Voornaam:</b>
+                                <%= u.firstName %>
+                                <br />
+                                <b>Achternaam:</b>
+                                <%= u.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= u.emailAddress %>
+                                <br />
+                                <b>Aantal opdrachten deelgenomen:</b>
+                                <%= u.participations %>
+
+                                <hr />
+
+                                <% const a = request.assignment %>
+                                <h6>Belangrijkste gegevens van de opdracht</h6>
+                                <b>Straat:</b>
+                                <%= a.playgroundStreet %>
+                                <br />
+                                <b>Huisnummer:</b>
+                                <%= a.playgroundHouseNumber %>
+                                <br />
+                                <% if(a.playgroundHouseNumberAddition != "" ) { %>
+                                <b>Huisnummer toevoeging:</b>
+                                <%= a.playgroundHouseNumberAddition %>
+                                <br />
+                                <% } %>
+                                <b>Plaats:</b>
+                                <%= a.playgroundTown %>
+                                <br />
+                                <b>Postcode:</b>
+                                <%= a.playgroundPostalCode %>
+                                <br />
+                                <b>Vind plaats op:</b>
+                                <%= new Date(a.dateTime).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}) %>
+                                <br />
+                                <b>Aantal LOTUSslachtoffers ingeschreven:</b>
+                                <%=a.participatingLotusVictims.length + "/" + a.amountOfLotusVictims %> 
+                                <% } else if(request.type === "addClientRole") { %>
+                                <h6>LOTUSslachtoffer</h6>
+                                <% const u = request.user %>
+                                <b>Voornaam:</b>
+                                <%= u.firstName %>
+                                <br />
+                                <b>Achternaam:</b>
+                                <%= u.lastName %>
+                                <br />
+                                <b>E-mailadres:</b>
+                                <%= u.emailAddress %>
+                                <br />
+                                <hr />
+
+                                <b>Huidige rol:</b>
+                                LOTUSslachtoffer
+                                <br />
+                                <b>Gewenste rol:</b>
+                                Opdrachtgever
+                                <br />
+                                <b>Resultaat rollen:</b>
+                                LOTUSslachtoffer, Opdrachtgever
+                                <br />
+                                <% } %>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sluiten</button>
+                                <form id="reject_request_form_<%= request._id %>" action="/request/decline" method="POST">
+                                    <% if(request.type === "addClientRole") { %> 
+                                        <input type="hidden" name="userId" value="<%= request.userId %>" />
+                                        <input type="hidden" name="requestType" value="<%= request.type %>" />
+                                        <input type="hidden" name="requestId" value="<%= request._id %>" />
+                                    <% } else { %>
+                                        <input type="hidden" name="userId" value="<%= request.userId %>" />
+                                        <input type="hidden" name="requestType" value="<%= request.type %>" />
+                                        <input type="hidden" name="requestId" value="<%= request._id %>" />
+                                        <input type="hidden" name="assignmentId" value="<%= request.assignment._id %>" />
+                                    <% } %>
+
+                                    <a data-bs-toggle="modal" data-bs-target="#confirmation_reject_request_<%= request._id %>">
+                                        <button class="btn btn-danger">Afwijzen</button>
+                                    </a>
+                                </form>
+
+                                <form id="approve_request_form_<%= request._id %>" action="/request/approve" method="POST">
+                                    <% if(request.type === "addClientRole") { %> 
+                                        <input type="hidden" name="userId" value="<%= request.userId %>" />
+                                        <input type="hidden" name="requestType" value="<%= request.type %>" />
+                                        <input type="hidden" name="requestId" value="<%= request._id %>" />
+                                    <% } else { %>
+                                        <input type="hidden" name="userId" value="<%= request.userId %>" />
+                                        <input type="hidden" name="requestType" value="<%= request.type %>" />
+                                        <input type="hidden" name="requestId" value="<%= request._id %>" />
+                                        <input type="hidden" name="assignmentId" value="<%= request.assignment._id %>" />
+                                    <% } %>
+
+                                    <% if(request.type === "updateAssignment") { %> 
+                                        <input type="hidden" name="firstName" value="<%= request.updatedAssignment.firstName %>" />
+                                        <input type="hidden" name="lastName" value="<%= request.updatedAssignment.lastName %>" />
+                                        <input type="hidden" name="emailAddress" value="<%= request.updatedAssignment.emailAddress %>" />
+                                        <input type="hidden" name="street" value="<%= request.updatedAssignment.street %>" />
+                                        <input type="hidden" name="houseNumber" value="<%= request.updatedAssignment.houseNumber %>" />
+                                        <input type="hidden" name="houseNumberAddition" value="<%= request.updatedAssignment.houseNumberAddition %>" />
+                                        <input type="hidden" name="postalCode" value="<%= request.updatedAssignment.postalCode %>" />
+                                        <input type="hidden" name="town" value="<%= request.updatedAssignment.town %>" />
+                                        <input type="hidden" name="billingEmailAddress" value="<%= request.updatedAssignment.billingEmailAddress %>" />
+                                        <input type="hidden" name="dateTime" value="<%= request.updatedAssignment.dateTime %>" />
+                                        <input type="hidden" name="playgroundStreet" value="<%= request.updatedAssignment.playgroundStreet %>" />
+                                        <input type="hidden" name="playgroundHouseNumber" value="<%= request.updatedAssignment.playgroundHouseNumber %>" />
+                                        <input type="hidden" name="playgroundHouseNumberAddition" value="<%= request.updatedAssignment.playgroundHouseNumberAddition %>" />
+                                        <input type="hidden" name="playgroundPostalCode" value="<%= request.updatedAssignment.playgroundPostalCode %>" />
+                                        <input type="hidden" name="playgroundTown" value="<%= request.updatedAssignment.playgroundTown %>" />
+                                        <input type="hidden" name="makeUpStreet" value="<%= request.updatedAssignment.makeUpStreet %>" />
+                                        <input type="hidden" name="makeUpHouseNumber" value="<%= request.updatedAssignment.makeUpHouseNumber %>" />
+                                        <input type="hidden" name="makeUpHouseNumberAddition" value="<%= request.updatedAssignment.makeUpHouseNumberAddition %>" />
+                                        <input type="hidden" name="makeUpPostalCode" value="<%= request.updatedAssignment.makeUpPostalCode %>" />
+                                        <input type="hidden" name="makeUpTown" value="<%= request.updatedAssignment.makeUpTown %>" />
+                                        <input type="hidden" name="amountOfLotusVictims" value="<%= request.updatedAssignment.amountOfLotusVictims %>" />
+                                        <input type="hidden" name="comments" value="<%= request.updatedAssignment.comments %>" />
+                                    <% } %> 
+
+                                    <a data-bs-toggle="modal" data-bs-target="#confirmation_approve_request_<%= request._id %>">
+                                        <button class="btn btn-success">Goedkeuren</button>
+                                    </a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% requests.reverse().forEach(request => { %>
+            <div class="modal fade" id="confirmation_approve_request_<%= request._id %>" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Bevestigen</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Weet je zeker dat je het verzoek wil goedkeuren?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                            <button form="approve_request_form_<%= request._id %>" type="submit" class="btn btn-primary">Bevestig</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="confirmation_reject_request_<%= request._id %>" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Bevestigen</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Weet je zeker dat je het verzoek wil afwijzen?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                            <button form="reject_request_form_<%= request._id %>" type="submit" class="btn btn-primary">Bevestig</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% }); %>
+        </div>
+    </section>
+</main>
+
+<script> history.pushState(null, "", location.href.split("?")[0]);</script>
+
+<%- include("footer/footer") %>

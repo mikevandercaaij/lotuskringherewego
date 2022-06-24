@@ -1,0 +1,428 @@
+<%- include("header/header") %>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Mijn profiel</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item active">Mijn profiel</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <section class="section profile">
+        <div class="row">
+
+            <% if(typeof alertText != "undefined" && alertText !== "") { %>
+
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-1"></i>
+                            <%= alertText %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>
+                    </div>
+                </div>
+        
+                <% } %>
+
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                        <img src="/assets/img/avatar.jpg" alt="Profile" class="rounded-circle" />
+                        <h2><%= session.user.firstName + " " + session.user.lastName%></h2>
+                        <% let role = ""; switch(session.user.activeRole) { case "coordinator": role = "Coördinator"; break; case "client" : role = "Opdrachtgever"; break; case "member": role = "LOTUSslachtoffer"; break; } %>
+
+                        <h3><%=role%></h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <!-- Bordered Tabs -->
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+                            <li class="nav-item">
+                                <% if(typeof type == "undefined" || type === "") { %>
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overzicht</button>
+                                <% } else {%>
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-overview">Overzicht</button>
+                                <% } %>
+                            </li>
+
+                            <li class="nav-item">
+                                <% if(typeof type != "undefined" && type == "profile_info_change") { %>
+                                <button id="profileTab" class="nav-link active" data-bs-toggle="tab" href="#profile-edit" data-target="#profile-edit">Persoonlijke gegevens wijzigen</button>
+                                <% } else {%>
+                                <button id="profileTab" class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Persoonlijke gegevens wijzigen</button>
+                                <% } %>
+                            </li>
+
+                            <li class="nav-item">
+                                <% if(typeof type != "undefined" && type == "password_change") { %>
+                                <button id="passwordTab" class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-change-password">Wachtwoord veranderen</button>
+                                <% } else {%>
+                                <button id="passwordTab" class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Wachtwoord veranderen</button>
+                                <% } %>
+                            </li>
+                            <% if (session.user.activeRole == "member" && session.user.roles[1] != "client") { %>
+                                <% if(roleRequest.length == 0 || roleProcessingRequest.length > 0) { %> 
+                                <li class="nav-item">
+                                    <% if(typeof type != "undefined" && type == "roles_request") { %>
+                                    <button id="rolesTab" class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-roles-request">Rol aanvragen</button>
+                                    <% } else {%>
+                                    <button id="rolesTab" class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-roles-request">Rol aanvragen</button>
+                                    <% } %>
+                                </li>
+                                <% } %>
+                            <% } %>
+                        </ul>
+                        <div class="tab-content pt-2"> 
+                            <% if(typeof type == "undefined" || type === "") { %>
+                            <div class="tab-pane fade profile-overview show active" id="profile-overview">
+                            <% } else { %> 
+                                <div class="tab-pane fade profile-overview" id="profile-overview">
+                            <% } %> 
+                                <h5 class="card-title">Persoonlijke gegevens</h5>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Voornaam</div>
+                                    <div class="col-lg-9 col-md-8"><%= session.user.firstName %></div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Achternaam</div>
+                                    <div class="col-lg-9 col-md-8"><%=session.user.lastName %></div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">E-mailadres</div>
+                                    <div class="col-lg-9 col-md-8"><%= session.user.emailAddress %></div>
+                                </div>
+
+                                <% if(session.user.activeRole == "client") { %> 
+
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label">Telefoonnummer</div>
+                                        <div class="col-lg-9 col-md-8"><%= session.user.phoneNumber %></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label">Straat</div>
+                                        <div class="col-lg-9 col-md-8"><%= session.user.street %></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label">Huisnummer</div>
+                                        <div class="col-lg-9 col-md-8"><%if(isNaN(session.user.houseNumber)){%><%}else{%><%= session.user.houseNumber + session.user.houseNumberAddition%><%}%></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label">Plaats</div>
+                                        <div class="col-lg-9 col-md-8"><%= session.user.town %></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label">Postcode</div>
+                                        <div class="col-lg-9 col-md-8"><%= session.user.postalCode %></div>
+                                    </div>
+
+                                <% } %> 
+
+                            </div>
+
+                            <% if(typeof type != "undefined" && type == "profile_info_change") { %>
+                                <div class="tab-pane fade profile-edit pt-3 active show" id="profile-edit">
+                            <% } else { %> 
+                                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+                            <% } %> 
+                                <!-- Profile Edit Form -->
+                                <form action="/user/profile/edit" method="POST">
+                                    <div class="row mb-3">
+                                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Voornaam</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.firstName != "undefined") { %>
+                                            <input name="firstName" type="text" class="form-control" id="firstName" value="<%= oldValues.firstName %>" />
+                                            <% } else if (typeof firstNameErr != "undefined") { %>
+                                            <input name="firstName" type="text" class="form-control" id="firstName" />
+                                            <% } else { %>
+                                            <input name="firstName" type="text" class="form-control" id="firstName" value="<%= session.user.firstName %>" />
+                                            <% } %>
+                                            <label class="form-error"><% if(typeof firstNameErr != "undefined"){%><%=firstNameErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Achternaam</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.lastName != "undefined") { %>
+                                            <input name="lastName" type="text" class="form-control" id="lastName" value="<%= oldValues.lastName %>" />
+                                            <% } else if (typeof lastNameErr != "undefined") { %>
+                                            <input name="lastName" type="text" class="form-control" id="lastName" />
+                                            <% } else { %>
+                                            <input name="lastName" type="text" class="form-control" id="lastName" value="<%= session.user.lastName %>" />
+                                            <% } %>
+                                            <label class="form-error"><% if(typeof lastNameErr != "undefined"){%><%=lastNameErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">E-mailadres</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.emailAddress != "undefined") { %>
+                                            <input name="emailAddress" type="text" class="form-control" id="Email" value="<%= oldValues.emailAddress %>" />
+                                            <% } else if (typeof emailAddressErr != "undefined") { %>
+                                            <input name="emailAddress" type="text" class="form-control" id="Email" />
+                                            <% } else { %>
+                                            <input name="emailAddress" type="text" class="form-control" id="Email" value="<%= session.user.emailAddress %>" />
+                                            <% } %>
+
+                                            <label class="form-error"><% if(typeof emailAddressErr != "undefined"){%><%=emailAddressErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                   <% if(session.user.activeRole == "client") { %>
+
+                                    <div class="row mb-3">
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Telefoonnummer</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.phoneNumber != "undefined") { %>
+                                            <input name="phoneNumber" type="text" class="form-control" id="phoneNumber" value="<%= oldValues.phoneNumber %>" />
+                                            <% } else if (typeof phoneNumberErr != "undefined") { %>
+                                            <input name="phoneNumber" type="text" class="form-control" id="phoneNumber" />
+                                            <% } else { %>
+                                            <input name="phoneNumber" type="text" class="form-control" id="phoneNumber" value="<%= session.user.phoneNumber %>" />
+                                            <% } %>
+
+                                            <label class="form-error"><% if(typeof phoneNumberErr != "undefined"){%><%=phoneNumberErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Straat</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.street != "undefined") { %>
+                                            <input name="street" type="text" class="form-control" id="Street" value="<%= oldValues.street %>" />
+                                            <% } else if (typeof streetErr != "undefined") { %>
+                                            <input name="street" type="text" class="form-control" id="Street" />
+                                            <% } else { %>
+                                            <input name="street" type="text" class="form-control" id="Street" value="<%= session.user.street %>" />
+                                            <% } %>
+
+                                            <label class="form-error"><% if(typeof streetErr != "undefined"){%><%=streetErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Huisnummer</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.houseNumber != "undefined") { %>
+                                            <input name="houseNumber" type="text" class="form-control" id="HouseNumber" value="<%= oldValues.houseNumber %>" />
+                                            <% } else if (typeof houseNumberErr != "undefined") { %>
+                                            <input name="houseNumber" type="text" class="form-control" id="HouseNumber" />
+                                            <% } else { %>
+                                            <input name="houseNumber" type="text" class="form-control" id="HouseNumber" value="<%= session.user.houseNumber %>" />
+                                            <% } %>
+                                            <label class="form-error"><% if(typeof houseNumberErr != "undefined"){%><%=houseNumberErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Huisnummer toevoeging</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.houseNumberAddition != "undefined") { %>
+                                            <input name="houseNumberAddition" type="text" class="form-control" id="HouseNumberAddition" value="<%= oldValues.houseNumberAddition %>" />
+                                            <% } else if (typeof houseNumberAdditionErr != "undefined") { %>
+                                            <input name="houseNumberAddition" type="text" class="form-control" id="HouseNumberAddition" />
+                                            <% } else { %>
+                                            <input name="houseNumberAddition" type="text" class="form-control" id="HouseNumberAddition" value="<%= session.user.houseNumberAddition %>" />
+                                            <% } %>
+
+                                            <label class="form-error"><% if(typeof houseNumberAdditionErr != "undefined"){%><%=houseNumberAdditionErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Plaats</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.town != "undefined") { %>
+                                            <input name="town" type="text" class="form-control" id="town" value="<%= oldValues.town %>" />
+                                            <% } else if (typeof townErr != "undefined") { %>
+                                            <input name="town" type="text" class="form-control" id="town" />
+                                            <% } else { %>
+                                            <input name="town" type="text" class="form-control" id="town" value="<%= session.user.town %>" />
+                                            <% } %>
+
+                                            <label class="form-error"><% if(typeof townErr != "undefined"){%><%=townErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Postcode</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <% if(typeof oldValues != "undefined" && typeof oldValues.postalCode != "undefined") { %>
+                                            <input name="postalCode" type="text" class="form-control" id="postalCode" value="<%= oldValues.postalCode %>" />
+                                            <% } else if (typeof postalCodeErr != "undefined") { %>
+                                            <input name="postalCode" type="text" class="form-control" id="postalCode" />
+                                            <% } else { %>
+                                            <input name="postalCode" type="text" class="form-control" id="postalCode" value="<%= session.user.postalCode %>" />
+                                            <% } %>
+
+                                            <label class="form-error"><% if(typeof postalCodeErr != "undefined"){%><%=postalCodeErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                   <% } %>
+
+                                    <input type="hidden" name="type" value="profile_info_change" />
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Wijzigingen opslaan</button>
+                                    </div>
+                                </form>
+                                <!-- End Profile Edit Form -->
+                            </div>
+
+                            <% if(typeof type != "undefined" && type == "password_change") { %>
+                                <div class="tab-pane fade pt-3 active show" id="profile-change-password">
+                            <% } else { %> 
+                                <div class="tab-pane fade pt-3" id="profile-change-password">
+                            <% } %> 
+                                <!-- Change Password Form -->
+                                <form action="/user/profile/password" method="POST">
+                                    <div class="row mb-3">
+                                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Huidige wachtwoord</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <p>
+                                                <input id="currentPassword" name="currentPassword" type="password" class="form-control" id="currentPassword" value="<% if(typeof oldValues != "undefined" && typeof oldValues.oldPassword != "undefined"){%><%=oldValues.oldPassword%><%}%>">
+                                                <i class="bi bi-eye-slash" id="toggleCurrentPassword"></i>
+                                            </p>
+                                            <label class="form-error"><% if(typeof currentPasswordErr != "undefined"){%><%=currentPasswordErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">Nieuwe wachtwoord</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <p>
+                                                <input id="password" type="password" name="newPassword" class="form-control" oninput="strengthChecker()" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.password%><%}%>">
+                                                <i class="bi bi-eye-slash" id="togglePassword"></i>
+                                                <div id="strength-bar"></div>
+                                                <p id="msg"></p>
+                                            </p>
+                                            <label class="form-error"><% if(typeof newPasswordErr != "undefined"){%><%=newPasswordErr%><%}%></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Bevestig wachtwoord</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <p>
+                                                <input id="confirmNewPassword" name="confirmPassword" type="password" class="form-control" id="renewPassword" />
+                                                <i class="bi bi-eye-slash" id="toggleConfirmNewPassword"></i>
+                                            </p>
+                                            <label class="form-error"><% if(typeof confirmPasswordErr != "undefined"){%><%=confirmPasswordErr%><%}%></label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="type" value="password_change" />
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Wachtwoord wijzigen</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- End Change Password Form -->
+                            <% if (session.user.activeRole == "member" && session.user.roles[1] != "client") { %>
+                                <% if(roleRequest.length == 0 && roleProcessingRequest.length == 0) { %> 
+                                    <% if(typeof type != "undefined" && type == "roles_request") { %>
+                                        <div class="tab-pane fade pt-3 active show" id="profile-roles-request">
+                                    <% } else { %> 
+                                        <div class="tab-pane fade pt-3" id="profile-roles-request">
+                                    <% } %> 
+                                    <!-- Request Role Form -->
+                                    <form action="/user/profile/roles" method="POST">
+                                        <div class="row mb-3">
+                                            <div class="col-md-8 col-lg-9">
+                                                <h5 class="card-title">Beschikbare rol</h5>
+                                                <div class="form-group">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="client" name="client" checked disabled>
+                                                        <label class="form-check-label" style="font-size: 14px;">Opdrachtgever</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Rol aanvragen</button>
+                                    </form>
+                                <% } else if (roleProcessingRequest.length > 0) { %> 
+                                    <% if(typeof type != "undefined" && type == "roles_request") { %>
+                                        <div class="tab-pane fade pt-3 active show" id="profile-roles-request">
+                                    <% } else { %> 
+                                        <div class="tab-pane fade pt-3" id="profile-roles-request">
+                                    <% } %> 
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 col-lg-12">
+                                            <h5 class="card-title">Verzoek in behandeling <i class="bi bi-hourglass-split" style="float: right; font-size: 30px; color: #435df1;"></i></h5>
+                                            <p>Je hebt aangevraagd om een opdrachtgever te worden!</p>
+                                            <form action="/user/profile/roles/cancel" method="POST">
+                                                <button type="submit" class="btn btn-danger">Verzoek annuleren</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                <% } %> 
+                            <% } %> 
+
+                            <!-- End Request Role Form Form -->
+                            </div>
+                        </div>
+                        <!-- End Bordered Tabs -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- End #main -->
+
+<script src="/assets/js/password.js"></script>
+
+<script>
+    function isNaN(x) {
+        return x !== x;
+    };
+    
+    const toggleCurrentPassword = document.querySelector("#toggleCurrentPassword");
+    const currentPassword = document.querySelector("#currentPassword");
+
+    const toggleNewPassword = document.querySelector("#togglePassword");
+    const newPassword = document.querySelector("#password");
+
+    const toggleConfirmNewPassword = document.querySelector("#toggleConfirmNewPassword");
+    const confirmNewPassword = document.querySelector("#confirmNewPassword");
+
+    toggleCurrentPassword.addEventListener("click", function (e) {
+        const type = currentPassword.getAttribute("type") === "password" ? "text" : "password";
+        currentPassword.setAttribute("type", type);
+        this.classList.toggle("bi-eye");
+    });
+
+    toggleNewPassword.addEventListener("click", function (e) {
+        const type = newPassword.getAttribute("type") === "password" ? "text" : "password";
+        newPassword.setAttribute("type", type);
+        this.classList.toggle("bi-eye");
+    });
+
+    toggleConfirmNewPassword.addEventListener("click", function (e) {
+        const type = confirmNewPassword.getAttribute("type") === "password" ? "text" : "password";
+        confirmNewPassword.setAttribute("type", type);
+        this.classList.toggle("bi-eye");
+    });
+
+    history.pushState(null, "", location.href.split("?")[0]);
+</script>
+
+<%- include("footer/footer") %>

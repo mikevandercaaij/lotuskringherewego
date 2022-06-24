@@ -1,0 +1,132 @@
+<%- include("header/header") %>
+
+<main>
+    <div class="container">
+        <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="pt-4 pb-2">
+                                    <h5 class="card-title text-center pb-0 fs-4">Account aanmaken</h5>
+                                    <p class="text-center small">als opdrachtgever</p>
+                                </div>
+
+                                <form class="row g-3 needs-validation" action="/register" method="POST">
+                                    <div class="col-12">
+                                        <label class="form-label">Voornaam</label>
+                                        <input type="text" name="firstName" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.firstName%><%}%>">
+                                        <label class="form-error"><% if(typeof firstNameErr != "undefined"){%><%=firstNameErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Achternaam</label>
+                                        <input type="text" name="lastName" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.lastName%><%}%>">
+                                        <label class="form-error"><% if(typeof lastNameErr != "undefined"){%><%=lastNameErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">E-mailadres</label>
+                                        <input type="text" name="emailAddress" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.emailAddress%><%}%>">
+                                        <label class="form-error"><% if(typeof emailAddressErr != "undefined"){%><%=emailAddressErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Telefoonnummer</label>
+                                        <input type="text" name="phoneNumber" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.phoneNumber%><%}%>">
+                                        <label class="form-error"><% if(typeof phoneNumberErr != "undefined"){%><%=phoneNumberErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                            <label class="form-label">Wachtwoord</label>
+                                            <input id="password" type="password" name="password" class="form-control" oninput="strengthChecker()" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.password%><%}%>">
+                                                <i class="bi bi-eye-slash" id="togglePassword"></i>
+                                                <div id="strength-bar"></div>
+                                            <p id="msg"></p>
+                                        <label class="form-error"><% if(typeof passwordErr != "undefined"){%><%=passwordErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Bevestig wachtwoord</label>
+                                        <input id="confirmPassword" type="password" name="confirmPassword" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.confirmPassword%><%}%>">
+                                        
+                                        <i class="bi bi-eye-slash" id="toggleConfirmPassword"></i>
+
+                                    </div>
+                                    <label class="form-error"><% if(typeof confirmPasswordErr != "undefined"){%><%=confirmPasswordErr%><%}%></label>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Straat</label>
+                                        <input type="text" name="street" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.street%><%}%>">
+                                        <label class="form-error"><% if(typeof streetErr != "undefined"){%><%=streetErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-8">
+                                        <label class="form-label">Huisnummer</label>
+                                        <input type="text" name="houseNumber" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.houseNumber%><%}%>">
+                                        <label class="form-error"><% if(typeof houseNumberErr != "undefined"){%><%=houseNumberErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <label class="form-label">Toevoeging</label>
+                                        <input type="text" name="houseNumberAddition" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.houseNumberAddition%><%}%>">
+                                        <label class="form-error"><% if(typeof houseNumberAdditionErr != "undefined"){%><%=houseNumberAdditionErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Plaats</label>
+                                        <input type="text" name="town" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.town%><%}%>">
+                                        <label class="form-error"><% if(typeof townErr != "undefined"){%><%=townErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Postcode</label>
+                                        <input type="text" name="postalCode" class="form-control" value="<% if(typeof oldValues != "undefined"){%><%=oldValues.postalCode%><%}%>">
+                                        <label class="form-error"><% if(typeof postalCodeErr != "undefined"){%><%=postalCodeErr%><%}%></label>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button class="btn btn-primary w-100" type="submit">Account aanmaken</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="small mb-0">
+                                            Heb je al een account?
+                                            <a href="login">Log hier in</a>
+                                        </p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+<!-- End #main -->
+
+<script src="/assets/js/password.js"></script>
+
+<script>
+    const togglePassword = document.querySelector("#togglePassword");
+    const password = document.querySelector("#password");
+
+    togglePassword.addEventListener("click", function (e) {
+        const type = password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+        this.classList.toggle("bi-eye");
+    });
+
+    const toggleConfirmPassword = document.querySelector("#toggleConfirmPassword");
+    const confirmPassword = document.querySelector("#confirmPassword");
+
+    toggleConfirmPassword.addEventListener("click", function (e) {
+        const type = confirmPassword.getAttribute("type") === "password" ? "text" : "password";
+        confirmPassword.setAttribute("type", type);
+        this.classList.toggle("bi-eye");
+    });
+ 
+</script>
+
+<%- include("footer/footer") %>
